@@ -96,6 +96,7 @@ const VideoView = ({
       />
       {label !== undefined && (
         <InfoLabel
+          test-id="userInfoLabel"
           text="Presenter"
           color="dolbySecondary.200"
           bg="dolbyNeutral.700"

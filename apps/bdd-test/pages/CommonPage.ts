@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { expect } from '@playwright/test';
 import { Locator, Page } from 'playwright';
+import { delay } from '../utils/helper';
 
 import { State, Status, Screen } from '../utils/type';
 
@@ -43,7 +44,7 @@ export default class CommonPage {
 
   async copyInviteLink() {
     console.log(`\tCommon: Copy invite link`);
-    await this.clocators.inviteLink.click();
+    await this.clocators.inviteBtn.click();
   }
 
   async toggleMicrophone(status: Status) {
@@ -82,17 +83,21 @@ export default class CommonPage {
     }
   }
 
+  async toggleScreenShare(action: 'Starts' | 'Stops') {
+    action === 'Starts' ? await this.startScreenShare() : await this.stopScreenShare();
+  }
+
   async startScreenShare() {
     console.log(`\tCommon: Start screen share`);
     if ((await this.getScreenSharingStatus()) === 'Off') {
-      this.clocators.shareBtn.click();
+      await this.clocators.shareBtn.click();
     }
   }
 
   async stopScreenShare() {
     console.log(`\tCommon: Stop screen share`);
     if ((await this.getScreenSharingStatus()) === 'On') {
-      this.clocators.shareBtn.click();
+      await this.clocators.shareBtn.click();
     }
   }
 
@@ -153,6 +158,11 @@ export default class CommonPage {
     await expect(this.clocators.timerLbl).toHaveText(text);
   }
 
+  async verifyUserInfoLabel(text: string) {
+    console.log(`\tCommon:: Verify user info label to be ${text}`);
+    await expect(this.clocators.userInfoLabel).toHaveText(text);
+  }
+
   async verifyTimerIsGreaterThan(value: number) {
     console.log(`\tCommon:: Verify timer to be in between ${value - 2} and ${value + 5} `);
     const duration = await this.clocators.timerLbl.innerText();
@@ -197,7 +207,7 @@ export default class CommonPage {
 
   async verifyInviteBtnState(state: State) {
     console.log(`\tCommon:: Verify invite button is  ${state}`);
-    await this.verifyComponentState(this.clocators.inviteLink, state);
+    await this.verifyComponentState(this.clocators.inviteBtn, state);
   }
 
   async verifyFullScreenBtnState(state: State) {
@@ -241,9 +251,9 @@ export default class CommonPage {
   }
 
   // TODO: Not sure button will have text
-  async verifyCopyInviteLinkButtonText(text: string) {
-    console.log(`\tCommon:: Verify copy link button to be ${text}`);
-    await expect(this.clocators.inviteLink).toHaveText(text);
+  async verifyCopyInviteButtonText(text: string) {
+    console.log(`\tCommon:: Verify invite button to be ${text}`);
+    await expect(this.clocators.inviteLinkName).toHaveText(text);
   }
 
   async verifyMainStreamViewFullScreen(screen: Screen) {

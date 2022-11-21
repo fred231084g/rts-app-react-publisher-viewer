@@ -28,6 +28,14 @@ When(
   }
 );
 
+When(
+  /^the publisher (Starts|Stops) screen sharing on the (Preview|Stream) page$/,
+  async function (this: ScenarioWorld, action, pageName) {
+    const pageObject = getPageObject(this, `Publisher${pageName}Page`);
+    await pageObject.toggleScreenShare(action);
+  }
+);
+
 Then(/^the publisher should be navigated to (Preview|Stream) page$/, async function (this: ScenarioWorld, pageName) {
   const pageObject = getPageObject(this, `Publisher${pageName}Page`);
   await pageObject.waitForPageLoad();
@@ -142,6 +150,14 @@ Then(
   async function (this: ScenarioWorld, pageName, value) {
     const pageObject = getPageObject(this, `Publisher${pageName}Page`);
     await pageObject.verifyTimer(value);
+  }
+);
+
+Then(
+  /^on the publisher (Preview|Stream) page user info label value should be "([^"]*)"$/,
+  async function (this: ScenarioWorld, pageName, value) {
+    const pageObject = getPageObject(this, `Publisher${pageName}Page`);
+    await pageObject.verifyUserInfoLabel(value);
   }
 );
 

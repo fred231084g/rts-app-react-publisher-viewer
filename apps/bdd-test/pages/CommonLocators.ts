@@ -7,48 +7,64 @@ export default class CommonLocators {
 
   readonly timerLbl: Locator;
 
-  readonly streamingStatusLbl: Locator;
+  readonly inviteViewersBtn: Locator;
 
-  readonly microphoneBtn: Locator;
+  readonly videoViewContainer: Locator;
 
-  readonly cameraBtn: Locator;
+  readonly videoView: Locator;
 
-  readonly shareBtn: Locator;
+  readonly videoViewInfoLbl: Locator;
+
+  readonly videoViewMicrophoneBtn: Locator;
+
+  readonly videoViewCameraBtn: Locator;
+
+  readonly screenViewContainer: Locator;
+
+  readonly screenView: Locator;
+
+  readonly screenViewInfoLbl: Locator;
+
+  readonly screenViewMicrophoneBtn: Locator;
+
+  readonly screenViewCameraBtn: Locator;
+
+  readonly screenViewStopSharingBtn: Locator;
+
+  readonly screenViewFullScreenBtn: Locator;
+
+  readonly addSourceBtn: Locator;
+
+  readonly shareScreenBtn: Locator;
 
   readonly settingsBtn: Locator;
 
-  readonly inviteLink: Locator;
-
-  readonly streamInfoBtn: Locator;
-
-  readonly fullScreenBtn: Locator;
-
-  readonly mainStreamView: Locator;
-
-  readonly galleryView: Locator;
-
   readonly appVersion: Locator;
-
-  readonly streamInformationStats: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.companyNameLbl = page.locator('[test-id=actionBar] [test-id=headingName]');
     this.timerLbl = page.locator('[test-id=timer] p');
-    this.streamingStatusLbl = page.locator('[test-id=live-indicator]');
-    this.microphoneBtn = page.locator('[test-id=toggleMicrophoneButton]');
-    this.cameraBtn = page.locator('[test-id=toggleCameraButton]');
-    this.shareBtn = page.locator('[test-id=toggleShareButton]');
+    this.inviteViewersBtn = page.locator('[test-id=shareLinkButton]');
+    
+    this.videoViewContainer = page.locator('//*[@test-id="video-view-wrapper"]/parent::*').nth(0);
+    this.videoView = this.videoViewContainer.locator('[test-id=video-view]');
+    this.videoViewInfoLbl = this.videoViewContainer.locator('[test-id=viewInfoLabel]');
+    this.videoViewMicrophoneBtn = this.videoViewContainer.locator('[test-id=toggleMicrophoneButton]');
+    this.videoViewCameraBtn = this.videoViewContainer.locator('[test-id=toggleCameraButton]');
+    
+    this.screenViewContainer = page.locator('//*[@test-id="video-view-wrapper"]/parent::*').nth(1);
+    this.screenView = this.screenViewContainer.locator('[test-id=video-view]');
+    this.screenViewInfoLbl = this.screenViewContainer.locator('[test-id=viewInfoLabel]');
+    this.screenViewMicrophoneBtn = this.screenViewContainer.locator('[test-id=toggleMicrophoneButton]');
+    this.screenViewCameraBtn = this.screenViewContainer.locator('[test-id=toggleCameraButton]');
+    this.screenViewStopSharingBtn = this.screenViewContainer.locator('[test-id=stopScreenShare]');
+    this.screenViewFullScreenBtn = this.screenViewContainer.locator('[test-id=fullScreenButton]');
+
+    this.addSourceBtn = page.locator('[test-id=addSourceButton]'); // Add test-id
+    this.shareScreenBtn = page.locator('[test-id=shareScreenButton]'); // Add test-id
+    
     this.settingsBtn = page.locator('[test-id=settingsButton]');
-    // TODO: Replace with test-id once fixed
-    this.inviteLink = page.locator('[test-id=]');
-    // TODO: Remove first and last when the gallery view is implemented
-    this.streamInfoBtn = page.locator('[test-id=streamInfoButton]').first();
-    this.fullScreenBtn = page.locator('[test-id=fullScreenButton]').first();
-    this.mainStreamView = page.locator('[test-id=video-view]').first();
-    this.galleryView = page.locator('[test-id=video-view]').last();
-    this.appVersion = page.locator('[test-id=appVersion]').last();
-    // TODO: Replace with test-id once stream info drawer is defined
-    this.streamInformationStats = page.locator('[test-id=]');
+    this.appVersion = page.locator('[test-id=appVersion]');
   }
 }
