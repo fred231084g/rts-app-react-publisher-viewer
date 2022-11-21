@@ -13,16 +13,16 @@ const ShareLinkButton = ({ tooltip, linkText }: ShareLinkButtonProps) => {
     setValue(linkText);
   }, [linkText]);
   return (
-    <Tooltip label={hasCopied ? 'Link copied!' : 'Copy link'} {...tooltip}>
+    <Tooltip closeDelay={3000} label={hasCopied ? 'Link copied!' : 'Copy link'} {...tooltip}>
       <Button
         onClick={onCopy}
-        leftIcon={<IconCopy height="21px" />}
-        size="sm"
+        leftIcon={<IconCopy height="24px" />}
         aria-label="Copy link"
         test-id="shareLinkButton"
-        variant="transparent"
+        variant="link"
+        fontSize="14px"
       >
-        {linkText}
+        Invite viewers
       </Button>
     </Tooltip>
   );

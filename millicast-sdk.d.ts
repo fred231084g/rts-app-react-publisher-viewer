@@ -49,9 +49,9 @@ declare namespace millicast {
     media: 'audio' | 'video';
   }
   interface MediaStreamSource {
-    streamId: string;
+    readonly streamId: string;
     sourceId: string;
-    tracks: MediaTrackInfo[];
+    readonly tracks: MediaTrackInfo[];
   }
 
   interface MediaStreamLayers {
@@ -117,6 +117,7 @@ declare namespace millicast {
     packetsLostRatioPerSecond: number;
     totalBytesReceived: number;
     totalPacketsReceived: number;
+    totalPacketsLost: number;
   };
 
   type StreamAudioStats = {
@@ -205,6 +206,7 @@ declare namespace millicast {
     stop(): void;
     isActive(): boolean;
     connect(options?: ViewOptions): Promise<void>;
+    reconnect();
     project(sourceId?: string, mapping?: ViewProjectSourceMapping[]): Promise<void>;
     unproject(mediaIds: string[]): Promise<void>;
     addRemoteTrack(mediaType: 'audio' | 'video', streams: MediaStream[]): Promise<RTCRtpTransceiver>;

@@ -12,14 +12,13 @@ const InfoLabel = ({ text, color = 'dolbyPurple.400', bgColor = 'white', ...rest
       backdropFilter="auto"
       backdropBlur="4px"
       alignItems="center"
-      pt="2px"
-      pb="2px"
-      pl="8px"
-      pr="8px"
+      py="2px"
+      px="8px"
       h="20px"
       borderRadius="4px"
-      fontSize="smaller"
+      fontSize="12px"
       textColor={color}
+      lineHeight="16px"
       {...rest}
     >
       {text}

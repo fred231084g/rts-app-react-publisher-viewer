@@ -36,21 +36,21 @@ Feature: Publisher Preview - Not Live
         #And on the publisher Preview page inside main view live dot colour value should be "red"
         #And on the publisher Preview page inside main view source info label value should be "HD Camera"
 
-    Scenario: Publisher should be able to turn off and on the camera
-        Given a publisher is on the Preview page
-        Then on the publisher Preview page camera should be turned On
-        When the publisher turns Off the camera on the Preview page
-        Then on the publisher Preview page camera should be turned Off
-        When the publisher turns On the camera on the Preview page
-        Then on the publisher Preview page camera should be turned On
+    # Scenario: Publisher should be able to turn off and on the camera
+    #     Given a publisher is on the Preview page
+    #     Then on the publisher Preview page camera should be turned On
+    #     When the publisher turns Off the camera on the Preview page
+    #     Then on the publisher Preview page camera should be turned Off
+    #     When the publisher turns On the camera on the Preview page
+    #     Then on the publisher Preview page camera should be turned On
 
-    Scenario: Publisher should be able to turn off and on the microphone
-        Given a publisher is on the Preview page
-        Then on the publisher Preview page microphone should be turned On
-        When the publisher turns Off the microphone on the Preview page
-        Then on the publisher Preview page microphone should be turned Off
-        When the publisher turns On the microphone on the Preview page
-        Then on the publisher Preview page microphone should be turned On
+    # Scenario: Publisher should be able to turn off and on the microphone
+    #     Given a publisher is on the Preview page
+    #     Then on the publisher Preview page microphone should be turned On
+    #     When the publisher turns Off the microphone on the Preview page
+    #     Then on the publisher Preview page microphone should be turned Off
+    #     When the publisher turns On the microphone on the Preview page
+    #     Then on the publisher Preview page microphone should be turned On
 
     Scenario: Publisher should be able to do full screen of the main view
         Given a publisher is on the Preview page

@@ -1,9 +1,22 @@
-import { Box, Button, Flex, Heading, Spacer, VStack, Text, Center } from '@chakra-ui/react';
-import React from 'react';
+import { Box, Button, Text, Center } from '@chakra-ui/react';
+import React, { useEffect } from 'react';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import Content from './components/content';
 
 function App() {
+  useEffect(() => {
+    // prevent closing the page
+    const pageCloseHandler = (event: BeforeUnloadEvent) => {
+      event.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', pageCloseHandler);
+
+    return () => {
+      window.removeEventListener('beforeunload', pageCloseHandler);
+    };
+  }, []);
+
   const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
     return (
       <Box borderWidth="1px" p="4">
@@ -19,19 +32,9 @@ function App() {
   };
 
   return (
-    <VStack w="100%">
-      <Flex w="100%" gap="2" minWidth="max-content" alignItems="center">
-        <Box>
-          <Heading size="md" p="4">
-            Dolbyio logo
-          </Heading>
-        </Box>
-        <Spacer />
-      </Flex>
-      <ErrorBoundary fallbackRender={ErrorFallback}>
-        <Content />
-      </ErrorBoundary>
-    </VStack>
+    <ErrorBoundary fallbackRender={ErrorFallback}>
+      <Content />
+    </ErrorBoundary>
   );
 }
 

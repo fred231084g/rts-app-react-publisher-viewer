@@ -3,6 +3,7 @@ Feature: Publisher Stream
     As a publisher
     I want to do live streaming for an event
 
+
     Scenario: Publisher should be able to do streaming for an event
         Given a publisher is on the Preview page
         When the publisher starts streaming on the Preview page

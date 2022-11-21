@@ -1,28 +1,30 @@
 import { Button, ButtonProps } from '@chakra-ui/react';
-import { IconStream } from '@millicast-react/dolbyio-icons';
 import React from 'react';
 
-type LiveIndicatorProps = Omit<ButtonProps, 'onClick'> & {
+type GoLiveProps = ButtonProps & {
   isActive: boolean;
-  text?: string;
+  isLoading?: boolean;
+  start?: () => void;
+  stop?: () => void;
 };
 
-const LiveIndicator = ({ isActive, text = 'live', ...rest }: LiveIndicatorProps) => {
+const LiveIndicator = ({ isActive, isLoading, start, stop, ...rest }: GoLiveProps) => {
   return (
     <Button
       test-id="live-indicator"
-      as="div"
-      leftIcon={<IconStream height="16px" />}
-      px="2"
+      px="4"
       fontSize="12px"
-      letterSpacing="1px"
-      pointerEvents="none"
       size="sm"
-      backgroundColor={isActive ? 'dolbyRed.500' : 'dolbyNeutral.500'}
       textTransform="uppercase"
+      isLoading={isLoading}
+      bg={isActive ? 'dolbyRed.500' : 'dolbyEmerald.600'}
+      _hover={{
+        bg: isActive ? 'dolbyRed.500' : 'dolbyEmerald.600',
+      }}
+      onClick={isActive ? stop : start}
       {...rest}
     >
-      {text}
+      {isActive ? 'STOP' : 'GO LIVE'}
     </Button>
   );
 };
