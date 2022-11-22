@@ -7,6 +7,8 @@ import { verifyComponentState } from "./Utils";
 export class HeaderFooter {
     private page: Page;
 
+    readonly companyNameSelector: string;
+
     readonly companyNameLbl: Locator;
 
     readonly timerLbl: Locator;
@@ -25,7 +27,8 @@ export class HeaderFooter {
 
     constructor(page: Page) {
         this.page = page
-        this.companyNameLbl = page.locator('[test-id=actionBar] [test-id=headingName]');
+        this.companyNameSelector = '[test-id=actionBar] [test-id=headingName]';
+        this.companyNameLbl = page.locator(this.companyNameSelector);
         this.timerLbl = page.locator('[test-id=timer] p');
         this.streamStatusLbl = page.locator('[test-id=streamStatus]'); // Add test-id
         this.inviteViewersBtn = page.locator('[test-id=shareLinkButton]');
@@ -34,6 +37,11 @@ export class HeaderFooter {
         this.description = page.locator('[test-id=getStartedInfoDesc]'); // Add test-id
         this.appVersion = page.locator('[test-id=appVersion]');
     }
+
+    async waitForComponent() {
+        console.log(`\tHeaderFooter:: Wait for component to load`);
+        await this.page.waitForSelector(this.companyNameSelector);
+      }
 
     async copyInviteViewersLink() {
         console.log(`\tHeaderFooter: Copy invite viewers link`);

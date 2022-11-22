@@ -1,17 +1,32 @@
 import { expect } from '@playwright/test';
-import { Page } from 'playwright';
+import { Locator, Page } from 'playwright';
 
 import { State } from '../utils/type';
+import { AddSource } from './components/AddSource';
+import { HeaderFooter } from './components/HeaderFooter';
+import { PublisherSetting } from './components/PublisherSetting';
+import { StreamView } from './components/StreamView';
+import { verifyComponentState } from './components/Utils';
 
-import CommonPage from './CommonPage';
-import PublisherPreviewPageLocators from './PublisherPreviewPageLocators';
+export class PublisherPreviewPage {
+  private page: Page;
 
-export class PublisherPreviewPage extends CommonPage {
-  readonly locators: PublisherPreviewPageLocators;
+  readonly goLiveBtn: Locator;
 
+  readonly goLiveSelector = '[test-id=live-indicator]';
+
+  private headerFooterComponent: HeaderFooter;
+  private streamViewComponent: StreamView;
+  private addSourceComponent: AddSource;
+  private publisherSettingComponent: PublisherSetting;
+  
   constructor(page: Page) {
-    super(page);
-    this.locators = new PublisherPreviewPageLocators(page);
+    this.page = page;
+    this.goLiveBtn = page.locator(this.goLiveSelector);
+    this.headerFooterComponent = new HeaderFooter(page);
+    this.streamViewComponent = new StreamView(page);
+    this.addSourceComponent = new AddSource(page);
+    this.publisherSettingComponent = new PublisherSetting(page);
   }
 
   async open(url: string) {
@@ -23,43 +38,40 @@ export class PublisherPreviewPage extends CommonPage {
 
   async waitForPageLoad() {
     console.log(`\tPublisherPreviewPage:: Wait for page to load`);
-    await this.page.waitForSelector(this.locators.startBtnSelector);
-    await this.verifyStartBtnState('enabled');
+    await this.page.waitForSelector(this.goLiveSelector);
+    await this.verifyGoLiveBtnState('enabled');
   }
 
-  async startStreaming() {
-    console.log(`\tPublisherPreviewPage: Publisher start streaming`);
+  async goLive() {
+    console.log(`\tPublisherPreviewPage: Publisher go live`);
     await this.page.bringToFront();
-    await this.locators.startBtn.click();
+    await this.goLiveBtn.click();
   }
 
-  async verifyStartBtnState(state: State) {
-    console.log(`\tPublisherPreviewPage:: Verify start button is ${state}`);
-    await this.verifyComponentState(this.locators.startBtn, state);
+  async verifyGoLiveBtnState(state: State) {
+    console.log(`\tPublisherPreviewPage:: Verify go live button is ${state}`);
+    await verifyComponentState(this.goLiveBtn, state);
   }
 
-  async verifyHeaderLblState(state: State) {
-    console.log(`\tCommon:: Verify header label is ${state}`);
-    await this.verifyComponentState(this.locators.heading, state);
+  async verifyGoLiveBtnText(text: string) {
+    console.log(`\tPublisherPreviewPage:: Verify go live button text to be ${text}`);
+    await expect(this.goLiveBtn).toHaveText(text);
   }
 
-  async verifyDescriptionLblState(state: State) {
-    console.log(`\tCommon:: Verify description label is ${state}`);
-    await this.verifyComponentState(this.locators.description, state);
+  async getHeaderFooter(){
+    return this.headerFooterComponent;
   }
 
-  async verifyStartBtnText(text: string) {
-    console.log(`\tPublisherPreviewPage:: Verify start button text to be ${text}`);
-    await expect(this.locators.startBtn).toHaveText(text);
+  async getstreamView(){
+    return this.streamViewComponent;    
   }
 
-  async verifyGetStartedHeader(text: string) {
-    console.log(`\tPublisherPreviewPage:: Verify get started header as ${text}`);
-    await expect(this.locators.heading).toHaveText(text);
+  async getaddSource(){
+    return this.addSourceComponent;
   }
 
-  async verifyGetStartedDesc(text: string) {
-    console.log(`\tPublisherPreviewPage:: Verify get started description as ${text}`);
-    await expect(this.locators.description).toHaveText(text);
+  async getSetting(){
+    return this.publisherSettingComponent;
   }
+
 }
