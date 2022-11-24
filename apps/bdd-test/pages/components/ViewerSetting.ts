@@ -1,7 +1,7 @@
 import { Locator, Page } from "playwright";
-import { Status, State } from "apps/bdd-test/utils/type";
+import { Status, State } from '../../utils/type';
 import { expect } from "@playwright/test";
-import { verifyComponentState } from "./Utils";
+import { verifyComponentState } from "./ComponentUtils";
 
 export class ViewerSetting {
     private page: Page

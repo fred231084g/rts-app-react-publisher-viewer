@@ -1,20 +1,23 @@
 import { expect } from "@playwright/test";
-import { State } from "apps/bdd-test/utils/type";
+import { State } from '../../utils/type';
 import { Locator, Page } from "playwright";
-import { verifyComponentState } from "./Utils";
+import { verifyComponentState } from "./ComponentUtils";
 
 export class AddSource {
     private page: Page;
 
     readonly addSourceBtn: Locator;
 
+    readonly menuOptions: Locator;
+
     readonly shareScreenBtn: Locator;
 
 
     constructor(page: Page) {
         this.page = page
-        this.addSourceBtn = page.locator('[test-id=addSourceButton]'); // Add test-id
-        this.shareScreenBtn = page.locator('[test-id=Sharescreen]'); // Add test-id
+        this.addSourceBtn = page.locator('[test-id=addSourceButton]');
+        this.menuOptions = page.locator('[data-id=addSourceMenu] button');
+        this.shareScreenBtn = page.locator('[test-id=Sharescreen]');
     }
 
     async openAddSourceMenu() {
@@ -29,7 +32,13 @@ export class AddSource {
 
     async verifySubMenu(subMenus: [string]) {
         console.log(`\tAddSource:: Verify sub-menus ${subMenus}`);
-       // TODO: Get the subMenus and Verify
+        const count = await this.menuOptions.count();
+        const actualOptions = [];
+        for (let i = 0; i < count; ++i){
+           actualOptions.push(await this.menuOptions.nth(i).textContent());
+        }
+
+        expect(actualOptions).toEqual(subMenus);
     }
 
     async verifyAddSourceBtnText(text: string) {

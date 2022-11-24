@@ -6,7 +6,8 @@ import { AddSource } from './components/AddSource';
 import { HeaderFooter } from './components/HeaderFooter';
 import { PublisherSetting } from './components/PublisherSetting';
 import { StreamView } from './components/StreamView';
-import { verifyComponentState } from './components/Utils';
+import { verifyComponentState } from './components/ComponentUtils';
+import { StreamStats } from './components/StreamStats';
 
 export class PublisherPreviewPage {
   private page: Page;
@@ -19,6 +20,7 @@ export class PublisherPreviewPage {
   private streamViewComponent: StreamView;
   private addSourceComponent: AddSource;
   private publisherSettingComponent: PublisherSetting;
+  private streamStatsComponent: StreamStats;
   
   constructor(page: Page) {
     this.page = page;
@@ -27,6 +29,8 @@ export class PublisherPreviewPage {
     this.streamViewComponent = new StreamView(page);
     this.addSourceComponent = new AddSource(page);
     this.publisherSettingComponent = new PublisherSetting(page);
+    this.streamStatsComponent = new StreamStats(page);
+
   }
 
   async open(url: string) {
@@ -58,20 +62,23 @@ export class PublisherPreviewPage {
     await expect(this.goLiveBtn).toHaveText(text);
   }
 
-  async getHeaderFooter(){
+  getHeaderFooter(): HeaderFooter {
     return this.headerFooterComponent;
   }
 
-  async getstreamView(){
+  getStreamView(): StreamView {
     return this.streamViewComponent;    
   }
 
-  async getaddSource(){
+  getAddSource(): AddSource {
     return this.addSourceComponent;
   }
 
-  async getSetting(){
+  getSetting(): PublisherSetting{
     return this.publisherSettingComponent;
   }
 
+  getStreamStats(): StreamStats{
+    return this.streamStatsComponent;
+  }
 }

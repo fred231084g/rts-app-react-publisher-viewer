@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { State } from "apps/bdd-test/utils/type";
+import { State } from '../../utils/type';
 import { Locator } from "playwright";
 
 export async function verifyComponentState(locator: Locator, state: State) {

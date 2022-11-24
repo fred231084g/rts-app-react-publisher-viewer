@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
-import { State } from "apps/bdd-test/utils/type";
+import { State } from '../../utils/type';
 import { Locator, Page } from "playwright";
-import { verifyComponentState } from "./Utils";
+import { verifyComponentState } from "./ComponentUtils";
 
 
 export class HeaderFooter {
@@ -14,6 +14,8 @@ export class HeaderFooter {
     readonly timerLbl: Locator;
 
     readonly streamStatusLbl: Locator;
+
+    readonly multiSourceLbl: Locator;
 
     readonly inviteViewersBtn: Locator;
 
@@ -30,11 +32,12 @@ export class HeaderFooter {
         this.companyNameSelector = '[test-id=actionBar] [test-id=headingName]';
         this.companyNameLbl = page.locator(this.companyNameSelector);
         this.timerLbl = page.locator('[test-id=timer] p');
-        this.streamStatusLbl = page.locator('[test-id=streamStatus]'); // Add test-id
+        this.streamStatusLbl = page.locator('[test-id=streamStatus]');
+        this.multiSourceLbl = page.locator('[test-id=multiSource]');
         this.inviteViewersBtn = page.locator('[test-id=shareLinkButton]');
         this.viewersCountLbl = page.locator('[test-id=participantCountView] p');
-        this.header = page.locator('[test-id=getStartedInfoTitle]');
-        this.description = page.locator('[test-id=getStartedInfoDesc]'); // Add test-id
+        this.header = page.locator('[test-id=pageHeader]');
+        this.description = page.locator('[test-id=pageDesc]');
         this.appVersion = page.locator('[test-id=appVersion]');
     }
 
@@ -68,6 +71,11 @@ export class HeaderFooter {
     async verifyStreamingLblStatus(status: 'red') {
         console.log(`\tHeaderFooter:: Verify streaming label is ${status}`);
         // TODO: Get the background color and verify
+    }
+ 
+    async verifyMultiSource(text: string) {
+        console.log(`\tHeaderFooter:: Verify multisource to be ${text}`);
+        await expect(this.multiSourceLbl).toHaveText(text);
     }
     
     async verifyViewersCount(count: string) {
@@ -103,6 +111,16 @@ export class HeaderFooter {
     async verifyStreamingTimeLblState(state: State) {
         console.log(`\tHeaderFooter:: Verify streaming time label is ${state}`);
         await verifyComponentState(this.timerLbl, state);
+    }
+
+    async verifyStreamingDotLblState(state: State) {
+        console.log(`\tHeaderFooter:: Verify streaming dot label is ${state}`);
+        await verifyComponentState(this.streamStatusLbl, state);
+    }
+
+    async verifyMultiSourceLblState(state: State) {
+        console.log(`\tHeaderFooter:: Verify multisource label is ${state}`);
+        await verifyComponentState(this.multiSourceLbl, state);
     }
 
     async verifyInviteBtnState(state: State) {

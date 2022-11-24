@@ -8,7 +8,7 @@ import { HeaderFooter } from './components/HeaderFooter';
 import { PublisherSetting } from './components/PublisherSetting';
 import { StreamStats } from './components/StreamStats';
 import { StreamView } from './components/StreamView';
-import { verifyComponentState } from './components/Utils';
+import { verifyComponentState } from './components/ComponentUtils';
 
 export class PublisherStreamPage {
   private page: Page;

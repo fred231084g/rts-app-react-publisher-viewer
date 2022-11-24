@@ -34,10 +34,10 @@ Then(
 );
 
 Then(
-  /^on the publisher (Preview) page start button should be (visible|hidden|enabled|disabled)$/,
+  /^on the publisher (Preview) page go live button should be (visible|hidden|enabled|disabled)$/,
   async function (this: ScenarioWorld, pageName, buttonState) {
     const pageObject = getPageObject(this, `Publisher${pageName}Page`);
-    await pageObject.verifyStartBtnState(buttonState);
+    await pageObject.verifyGoLiveBtnState(buttonState);
   }
 );
 
@@ -45,7 +45,7 @@ Then(
   /^on the publisher (Preview) page heading value should be "([^"]*)"$/,
   async function (this: ScenarioWorld, pageName, value) {
     const pageObject = getPageObject(this, `Publisher${pageName}Page`);
-    await pageObject.verifyGetStartedHeader(value);
+    await pageObject.getHeaderFooter().verifyGetStartedHeader(value);
   }
 );
 
@@ -53,15 +53,15 @@ Then(
   /^on the publisher (Preview) page description value should be "([^"]*)"$/,
   async function (this: ScenarioWorld, pageName, value) {
     const pageObject = getPageObject(this, `Publisher${pageName}Page`);
-    await pageObject.verifyGetStartedDesc(value);
+    await pageObject.getHeaderFooter().verifyGetStartedDesc(value);
   }
 );
 
 Then(
-  /^on the publisher (Preview) page start button text should be "([^"]*)"$/,
+  /^on the publisher (Preview) page go live button text should be "([^"]*)"$/,
   async function (this: ScenarioWorld, pageName, value) {
     const pageObject = getPageObject(this, `Publisher${pageName}Page`);
-    await pageObject.verifyStartBtnText(value);
+    await pageObject.verifyGoLiveBtnText(value);
   }
 );
 

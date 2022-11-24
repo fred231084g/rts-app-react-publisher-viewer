@@ -50,250 +50,250 @@ const StatisticsInfo = ({ statistics }: StatisticsInfoProps) => {
             </Box>
           </Flex>
           {statistics.currentRoundTripTime && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Current RTT:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{statistics.currentRoundTripTime * 1000} ms</Text>
+                <Text test-id="value" fontSize="13px">{statistics.currentRoundTripTime * 1000} ms</Text>
               </Box>
             </Flex>
           )}
           {statistics.availableOutgoingBitrate &&
             statistics.audio?.outbounds.length > 0 &&
             statistics.video?.outbounds.length > 0 && (
-              <Flex w="100%">
+              <Flex w="100%" test-id="nameValuePair">
                 <Box flex="1">
-                  <Text fontSize="13px" color="dolbySecondary.200">
+                  <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                     Available Outgoing Bitrate:
                   </Text>
                 </Box>
                 <Box flex="1">
-                  <Text fontSize="13px">{formatBitRate(statistics.availableOutgoingBitrate)}</Text>
+                  <Text test-id="value" fontSize="13px">{formatBitRate(statistics.availableOutgoingBitrate)}</Text>
                 </Box>
               </Flex>
             )}
           {statistics.candidateType && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Candidate Type:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{statistics.candidateType}</Text>
+                <Text test-id="value" fontSize="13px">{statistics.candidateType}</Text>
               </Box>
             </Flex>
           )}
-          <Flex w="100%">
+          <Flex w="100%" test-id="nameValuePair">
             <Box flex="1">
-              <Text fontSize="13px" color="dolbySecondary.200">
+              <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                 Video Resolution:
               </Text>
             </Box>
             <Box flex="1">
               {statistics.video?.outbounds.length > 0 && (
-                <Text fontSize="13px">
+                <Text test-id="value" fontSize="13px">
                   {statistics.video?.outbounds[0].frameWidth}x{statistics.video?.outbounds[0].frameHeight}
                 </Text>
               )}
               {statistics.video?.inbounds.length > 0 && (
-                <Text fontSize="13px">
+                <Text test-id="value" fontSize="13px">
                   {statistics.video?.inbounds[0].frameWidth}x{statistics.video?.inbounds[0].frameHeight}
                 </Text>
               )}
             </Box>
           </Flex>
           {statistics.video?.outbounds.length > 0 && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Quality Limitation Reason:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{statistics.video?.outbounds[0].qualityLimitationReason}</Text>
+                <Text test-id="value" fontSize="13px">{statistics.video?.outbounds[0].qualityLimitationReason}</Text>
               </Box>
             </Flex>
           )}
-          <Flex w="100%">
+          <Flex w="100%" test-id="nameValuePair">
             <Box flex="1">
-              <Text fontSize="13px" color="dolbySecondary.200">
+              <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                 FPS:
               </Text>
             </Box>
             <Box flex="1">
               {statistics.video?.outbounds.length > 0 && (
-                <Text fontSize="13px">{statistics.video?.outbounds[0].framesPerSecond}</Text>
+                <Text test-id="value" fontSize="13px">{statistics.video?.outbounds[0].framesPerSecond}</Text>
               )}
               {statistics.video?.inbounds.length > 0 && (
-                <Text fontSize="13px">{statistics.video?.inbounds[0].framesPerSecond}</Text>
+                <Text test-id="value" fontSize="13px">{statistics.video?.inbounds[0].framesPerSecond}</Text>
               )}
             </Box>
           </Flex>
-          <Flex w="100%">
+          <Flex w="100%" test-id="nameValuePair">
             <Box flex="1">
-              <Text fontSize="13px" color="dolbySecondary.200">
+              <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                 Video Bitrate:
               </Text>
             </Box>
             <Box flex="1">
               {statistics.video?.outbounds.length > 0 && (
-                <Text fontSize="13px">{formatBitRate(statistics.video?.outbounds[0].bitrate)}</Text>
+                <Text test-id="value" fontSize="13px">{formatBitRate(statistics.video?.outbounds[0].bitrate)}</Text>
               )}
               {statistics.video?.inbounds.length > 0 && (
-                <Text fontSize="13px">{formatBitRate(statistics.video?.inbounds[0].bitrate)}</Text>
+                <Text test-id="value" fontSize="13px">{formatBitRate(statistics.video?.inbounds[0].bitrate)}</Text>
               )}
             </Box>
           </Flex>
-          <Flex w="100%">
+          <Flex w="100%" test-id="nameValuePair">
             <Box flex="1">
-              <Text fontSize="13px" color="dolbySecondary.200">
+              <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                 Audio Bitrate:
               </Text>
             </Box>
             <Box flex="1">
               {statistics.audio?.outbounds.length > 0 && (
-                <Text fontSize="13px">{formatBitRate(statistics.audio?.outbounds[0].bitrate)}</Text>
+                <Text test-id="value" fontSize="13px">{formatBitRate(statistics.audio?.outbounds[0].bitrate)}</Text>
               )}
               {statistics.audio?.inbounds.length > 0 && (
-                <Text fontSize="13px">{formatBitRate(statistics.audio?.inbounds[0].bitrate)}</Text>
+                <Text test-id="value" fontSize="13px">{formatBitRate(statistics.audio?.inbounds[0].bitrate)}</Text>
               )}
             </Box>
           </Flex>
           {statistics.video?.outbounds.length > 0 && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Video Total Sent:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{formatBytes(statistics.video?.outbounds[0].totalBytesSent)}</Text>
+                <Text test-id="value" fontSize="13px">{formatBytes(statistics.video?.outbounds[0].totalBytesSent)}</Text>
               </Box>
             </Flex>
           )}
           {statistics.video?.inbounds.length > 0 && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Video Total Received:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{formatBytes(statistics.video?.inbounds[0].totalBytesReceived)}</Text>
+                <Text test-id="value" fontSize="13px">{formatBytes(statistics.video?.inbounds[0].totalBytesReceived)}</Text>
               </Box>
             </Flex>
           )}
           {statistics.audio?.outbounds.length > 0 && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Audio Total Sent:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{formatBytes(statistics.audio?.outbounds[0].totalBytesSent)}</Text>
+                <Text test-id="value" fontSize="13px">{formatBytes(statistics.audio?.outbounds[0].totalBytesSent)}</Text>
               </Box>
             </Flex>
           )}
           {statistics.video?.inbounds.length > 0 && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Video Packet Loss:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{statistics.video.inbounds[0].totalPacketsLost}</Text>
+                <Text test-id="value" fontSize="13px">{statistics.video.inbounds[0].totalPacketsLost}</Text>
               </Box>
             </Flex>
           )}
           {statistics.audio?.inbounds.length > 0 && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Audio Packet Loss:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{statistics.audio.inbounds[0].totalPacketsLost}</Text>
+                <Text test-id="value" fontSize="13px">{statistics.audio.inbounds[0].totalPacketsLost}</Text>
               </Box>
             </Flex>
           )}
           {statistics.video?.inbounds.length > 0 && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Video Packet Jitter:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{statistics.video.inbounds[0].jitter} ms</Text>
+                <Text test-id="value" fontSize="13px">{statistics.video.inbounds[0].jitter} ms</Text>
               </Box>
             </Flex>
           )}
           {statistics.audio?.inbounds.length > 0 && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Audio Packet Jitter:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{statistics.audio.inbounds[0].jitter} ms</Text>
+                <Text test-id="value" fontSize="13px">{statistics.audio.inbounds[0].jitter} ms</Text>
               </Box>
             </Flex>
           )}
           {statistics.audio?.inbounds.length > 0 && (
-            <Flex w="100%">
+            <Flex w="100%" test-id="nameValuePair">
               <Box flex="1">
-                <Text fontSize="13px" color="dolbySecondary.200">
+                <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                   Audio Total Received:
                 </Text>
               </Box>
               <Box flex="1">
-                <Text fontSize="13px">{formatBytes(statistics.audio?.inbounds[0].totalBytesReceived)}</Text>
+                <Text test-id="value" fontSize="13px">{formatBytes(statistics.audio?.inbounds[0].totalBytesReceived)}</Text>
               </Box>
             </Flex>
           )}
-          <Flex w="100%">
+          <Flex w="100%" test-id="nameValuePair">
             <Box flex="1">
-              <Text fontSize="13px" color="dolbySecondary.200">
+              <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                 Codecs:
               </Text>
             </Box>
             <Box flex="1">
               {statistics.video.outbounds.length > 0 && (
-                <Text fontSize="13px">
+                <Text test-id="value" fontSize="13px">
                   {statistics.video?.outbounds[0].mimeType}, {statistics.audio?.outbounds[0].mimeType}
                 </Text>
               )}
               {statistics.video.inbounds.length > 0 && (
-                <Text fontSize="13px">
+                <Text test-id="value" fontSize="13px">
                   {statistics.video?.inbounds[0].mimeType}, {statistics.audio?.inbounds[0].mimeType}
                 </Text>
               )}
             </Box>
           </Flex>
-          <Flex w="100%">
+          <Flex w="100%" test-id="nameValuePair">
             <Box flex="1">
-              <Text fontSize="13px" color="dolbySecondary.200">
+              <Text test-id="name" fontSize="13px" color="dolbySecondary.200">
                 Timestamp:
               </Text>
             </Box>
             <Box flex="1">
               {statistics.video?.outbounds.length > 0 && (
-                <Text fontSize="13px">
+                <Text test-id="value" fontSize="13px">
                   {formatTimestamp(
                     statistics.video?.outbounds[0].timestamp || statistics.audio?.outbounds[0].timestamp
                   )}
                 </Text>
               )}
               {statistics.video?.inbounds.length > 0 && (
-                <Text fontSize="13px">
+                <Text test-id="value" fontSize="13px">
                   {formatTimestamp(statistics.video?.inbounds[0].timestamp || statistics.audio?.inbounds[0].timestamp)}
                 </Text>
               )}
@@ -301,7 +301,7 @@ const StatisticsInfo = ({ statistics }: StatisticsInfoProps) => {
           </Flex>
         </>
       ) : (
-        <Text>No Statistics</Text>
+        <Text test-id="noStats">No Statistics</Text>
       )}
     </VStack>
   );

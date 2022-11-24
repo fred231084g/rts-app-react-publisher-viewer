@@ -1,7 +1,7 @@
 import { Locator, Page } from "playwright";
-import { Status, State } from "apps/bdd-test/utils/type";
+import { Status, State } from '../../utils/type';
 import { expect } from "@playwright/test";
-import { verifyComponentState } from "./Utils";
+import { verifyComponentState } from "./ComponentUtils";
 
 export class PublisherSetting {
     private page: Page
@@ -26,6 +26,10 @@ export class PublisherSetting {
 
     readonly resolutionOptions: Locator
 
+    readonly bitrateDefault: Locator
+
+    readonly bitrateOptions: Locator
+
     readonly codecSelectSelector: string;
 
     readonly codecDefault: Locator
@@ -36,29 +40,43 @@ export class PublisherSetting {
 
     readonly simulcastSwitchInput: Locator
 
+    readonly qualityDefault: Locator
+
+    readonly qualityOptions: Locator
+
     constructor(page: Page){
         this.page = page;
-        this.settingBtn = page.locator('test-id=settingsButton');
-        this.settingDrawer = page.locator('[role="dialog"][id*="settingsDrawer"]'); // TODO: Add test-id
-        this.settingDrawerTitle = this.settingDrawer.locator('test-id=drawerTitle'); // TODO: Add test-id
+        this.settingBtn = page.locator('[test-id=settingsButton]');
+        this.settingDrawer = page.locator('//*[@test-id="settingTitle"]/parent::*[@role="dialog"]');
+        this.settingDrawerTitle = this.settingDrawer.locator('[test-id=settingTitle]');
 
         this.dropdownCount = this.settingDrawer.locator('[test-id*=SelectDefault]');
 
-        this.cameraDefault = this.settingDrawer.locator('test-id=cameraSelectDefault'); // TODO: Add test-id
-        this.cameraOptions = this.settingDrawer.locator('test-id=cameraSelectOptions'); // TODO: Add test-id
+        this.cameraDefault = this.settingDrawer.locator('[test-id=cameraSelectDefault]');
+        this.cameraOptions = this.settingDrawer.locator('[test-id=cameraSelectOptions]');
 
-        this.microphoneDefault = this.settingDrawer.locator('test-id=microphoneSelectDefault'); // TODO: Add test-id
-        this.microphoneOptions = this.settingDrawer.locator('test-id=microphoneSelectOptions'); // TODO: Add test-id
+        this.microphoneDefault = this.settingDrawer.locator('[test-id=microphoneSelectDefault]');
+        this.microphoneOptions = this.settingDrawer.locator('[test-id=microphoneSelectOptions]');
 
-        this.codecDefault = this.settingDrawer.locator('test-id=codecSelectDefault'); // TODO: Add test-id
-        this.codecOptions = this.settingDrawer.locator('test-id=codecSelectOptions'); // TODO: Add test-id
+        this.codecSelectSelector = '[test-id=codecSelectOptions]';
+        this.codecDefault = this.settingDrawer.locator('[test-id=codecSelectDefault]');
+        this.codecOptions = this.settingDrawer.locator(this.codecSelectSelector);
 
-        this.codecSelectSelector = 'test-id=resolutionSelectOptions';
-        this.resolutionDefault = this.settingDrawer.locator('test-id=resolutionSelectDefault'); // TODO: Add test-id
-        this.resolutionOptions = this.settingDrawer.locator(this.codecSelectSelector); // TODO: Add test-id
+        this.resolutionDefault = this.settingDrawer.locator('[test-id=resolutionSelectDefault]');
+        this.resolutionOptions = this.settingDrawer.locator('[test-id=resolutionSelectOptions]');
+
+        this.bitrateDefault = this.settingDrawer.locator('[test-id=bitrateSelectDefault]');
+        this.bitrateOptions = this.settingDrawer.locator('[test-id=bitrateSelectOptions]');
+
+        this.microphoneDefault = this.settingDrawer.locator('[test-id=microphoneSelectDefault]');
+        this.microphoneOptions = this.settingDrawer.locator('[test-id=microphoneSelectOptions]');
+
 
         this.simulcastSwitchLbl = this.settingDrawer.locator('[test-id=simulcastSwitch] p');
         this.simulcastSwitchInput = this.settingDrawer.locator('[test-id=simulcastSwitch] input');
+
+        this.qualityDefault = this.settingDrawer.locator('[test-id=qualitySelectDefault]');
+        this.qualityOptions = this.settingDrawer.locator('[test-id=qualitySelectOptions]');
     }
 
     async openSettingDrawer(){
@@ -77,9 +95,14 @@ export class PublisherSetting {
         status === 'On' ? this.simulcastSwitchInput.check() : this.simulcastSwitchInput.uncheck();
     }
 
-    async verifySettingDrawer(){
+    async verifySettingBtnState(state: State) {
+        console.log(`\tSetting:: Verify setting button state is  ${state}`);
+        await verifyComponentState(this.settingBtn, state);
+    }
+
+    async verifySettingDrawerState(state: State){
         console.log(`\tSetting: Verify setting drawer opened`)
-        await expect(this.settingDrawer).toBeVisible();
+        await verifyComponentState(this.settingDrawer, state);
     }
 
     async verifySettingDrawerTitle(title: string){
@@ -92,6 +115,70 @@ export class PublisherSetting {
         await expect(this.dropdownCount).toHaveCount(count)
     }
 
+    async verifyCameraDropdownState(state: State){
+        console.log(`\tSetting: Verify camera dropdown state - ${state}`)
+        await verifyComponentState(this.cameraDefault, state);
+    }
+
+    async verifyCameraDropdownOptions(options: [string]){
+        console.log(`\tSetting: Verify camera dropdown options - ${options}`)
+        const actualOptions = [];
+        const count = await this.cameraOptions.count();
+
+        for (let i = 0; i < count; ++i){
+            actualOptions.push(await this.cameraOptions.nth(i).textContent());
+        }
+        await expect(actualOptions).toEqual(options);
+    }
+
+    async verifyMicrophoneDropdownState(state: State){
+        console.log(`\tSetting: Verify microphone dropdown state - ${state}`)
+        await verifyComponentState(this.microphoneDefault, state);
+    }
+
+    async verifyMicrophoneDropdownOptions(options: [string]){
+        console.log(`\tSetting: Verify microphone dropdown options - ${options}`)
+        const actualOptions = [];
+        const count = await this.microphoneOptions.count();
+
+        for (let i = 0; i < count; ++i){
+            actualOptions.push(await this.microphoneOptions.nth(i).textContent());
+        }
+        await expect(actualOptions).toEqual(options);
+    }
+
+    async verifyResolutionDropdownState(state: State){
+        console.log(`\tSetting: Verify resolution dropdown state - ${state}`)
+        await verifyComponentState(this.resolutionDefault, state);
+    }
+
+    async verifyResolutionDropdownOptions(options: [string]){
+        console.log(`\tSetting: Verify resolution dropdown options - ${options}`)
+        const actualOptions = [];
+        const count = await this.resolutionOptions.count();
+
+        for (let i = 0; i < count; ++i){
+            actualOptions.push(await this.resolutionOptions.nth(i).textContent());
+        }
+        await expect(actualOptions).toEqual(options);
+    }
+
+    async verifyBitrateDropdownState(state: State){
+        console.log(`\tSetting: Verify bitrate dropdown state - ${state}`)
+        await verifyComponentState(this.bitrateDefault, state);
+    }
+
+    async verifyBitrateDropdownOptions(options: [string]){
+        console.log(`\tSetting: Verify bitrate dropdown options - ${options}`)
+        const actualOptions = [];
+        const count = await this.bitrateOptions.count();
+
+        for (let i = 0; i < count; ++i){
+            actualOptions.push(await this.bitrateOptions.nth(i).textContent());
+        }
+        await expect(actualOptions).toEqual(options);
+    }
+
     async verifyCodecDropdownSelected(codec: string){
         console.log(`\tSetting: Verify codec dropdown selected option - ${codec}`)
         await expect(this.codecDefault).toHaveText(codec)
@@ -102,7 +189,7 @@ export class PublisherSetting {
         const actualOptions = [];
         const count = await this.codecOptions.count();
         for (let i = 0; i < count; ++i){
-            actualOptions.push(await this.codecOptions.nth(i).innerText());
+            actualOptions.push(await this.codecOptions.nth(i).textContent());
         }
         await expect(actualOptions).toEqual(options);
     }
@@ -119,7 +206,7 @@ export class PublisherSetting {
 
     async verifySimulcastSwitchStatus(status: Status){
         console.log(`\tSetting: Verify simulcast switch input status - ${status}`)
-        const actualStatus = (this.simulcastSwitchInput.isChecked()) ? 'On' : 'Off';
+        const actualStatus = (await this.simulcastSwitchInput.isChecked()) ? 'On' : 'Off';
         expect(actualStatus).toEqual(status)
     }
 

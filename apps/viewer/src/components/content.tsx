@@ -115,10 +115,10 @@ const Content = () => {
       <Flex flex={1} width="100%" alignItems="center" justifyContent="center">
         {!isStreaming ? (
           <VStack>
-            <Heading test-id="getStartedInfoTitle" as="h2" fontSize="24px" fontWeight="600">
+            <Heading test-id="pageHeader" as="h2" fontSize="24px" fontWeight="600">
               Stream is not live
             </Heading>
-            <Text>Please wait for livestream to begin.</Text>
+            <Text test-id="pageDesc">Please wait for livestream to begin.</Text>
           </VStack>
         ) : (
           <Stack direction="row" justifyContent="center" alignItems="center" w="100%" spacing="6">
@@ -230,6 +230,7 @@ const Content = () => {
               </PopoverTrigger>
               <PopoverContent bg="dolbyNeutral.800" width="400px" border="none" p={6}>
                 <PopoverHeader
+                  test-id="streamInfoPopoverTitle"
                   color="white"
                   alignContent="flex-start"
                   border="none"
@@ -265,6 +266,7 @@ const Content = () => {
               </PopoverTrigger>
               <PopoverContent bg="dolbyNeutral.800" width="364px" border="none" p={6}>
                 <PopoverHeader
+                  test-id="settingTitle"
                   color="white"
                   alignContent="flex-start"
                   border="none"
@@ -279,7 +281,7 @@ const Content = () => {
                 <PopoverBody p={0}>
                   <Dropdown
                     leftIcon={<IconCameraOn />}
-                    testId="quality-select"
+                    testId="qualitySelect"
                     elementsList={streamQualityOptions}
                     elementResolver={(element) => {
                       const quality = element as SimulcastQuality;

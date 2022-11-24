@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
-import { State, Status, Screen } from "apps/bdd-test/utils/type";
+import { State, Status, Screen } from '../../utils/type';
 import { Locator, Page } from "playwright";
-import { isButtonToggled, verifyComponentState } from "./Utils";
+import { isButtonToggled, verifyComponentState } from "./ComponentUtils";
 
 export class StreamView {
     private page: Page
@@ -16,7 +16,7 @@ export class StreamView {
   
     readonly videoViewCameraBtn: Locator;
   
-    readonly  videoViewFullScreenBtn: Locator;
+    readonly videoViewFullScreenBtn: Locator;
 
     readonly screenViewContainer: Locator;
   
@@ -35,15 +35,15 @@ export class StreamView {
     constructor(page: Page){
         this.page = page
 
-        this.videoViewContainer = page.locator('//*[@test-id="video-view-wrapper"]/parent::*').nth(0);
-        this.videoView = this.videoViewContainer.locator('[test-id=video-view]');
-        this.videoViewSourceName = this.videoViewContainer.locator('[test-id=sourceName]'); // TODO: Add test-id
+        this.videoViewContainer = page.locator('//*[@test-id="videoViewWrapper"]/parent::*').nth(0);
+        this.videoView = this.videoViewContainer.locator('[test-id=videoView]');
+        this.videoViewSourceName = this.videoViewContainer.locator('[test-id=sourceName]');
         this.videoViewMicrophoneBtn = this.videoViewContainer.locator('[test-id=toggleMicrophoneButton]');
         this.videoViewCameraBtn = this.videoViewContainer.locator('[test-id=toggleCameraButton]');
-        this.screenViewFullScreenBtn = this.videoViewContainer.locator('[test-id=fullScreenButton]');
+        this.videoViewFullScreenBtn = this.videoViewContainer.locator('[test-id=fullScreenButton]');
 
-        this.screenViewContainer = page.locator('//*[@test-id="video-view-wrapper"]/parent::*').nth(1);
-        this.screenView = this.screenViewContainer.locator('[test-id=video-view]');
+        this.screenViewContainer = page.locator('//*[@test-id="videoViewWrapper"]/parent::*').nth(1);
+        this.screenView = this.screenViewContainer.locator('[test-id=videoView]');
         this.screenViewSourceName = this.screenViewContainer.locator('[test-id=sourceName]');
         this.screenViewMicrophoneBtn = this.screenViewContainer.locator('[test-id=toggleMicrophoneButton]');
         this.screenViewCameraBtn = this.screenViewContainer.locator('[test-id=toggleCameraButton]');
@@ -127,6 +127,11 @@ export class StreamView {
         await verifyComponentState(this.videoViewCameraBtn, state);
     }
 
+    async verifyVideoViewFullScreenBtnState(state: State) {
+        console.log(`\tStreamView:: Verify video view full screen button is  ${state}`);
+        await verifyComponentState(this.videoViewFullScreenBtn, state);
+    }
+
     async verifyVideoViewMicrophoneStatus(status: Status) {
         console.log(`\tStreamView:: Verify video view microphone status as ${status}`);
         expect(await this.getMicrophoneStatus(this.videoViewMicrophoneBtn)).toEqual(status);
@@ -170,7 +175,7 @@ export class StreamView {
 
     async stopScreenShare() {
         console.log(`\tStreamView:: Stop screen share`);
-        await this.turnOnCamera(this.screenViewStopSharingBtn);
+        await this.screenViewStopSharingBtn.click();
     }
 
     async screenViewFullScreen(screen: Screen) {
@@ -191,6 +196,11 @@ export class StreamView {
     async verifyStopScreenShareBtnState(state: State) {
         console.log(`\tStreamView:: Verify screen view stop screen button is ${state}`);
         await verifyComponentState(this.screenViewStopSharingBtn, state);
+    }
+
+    async verifyScreenViewFullScreenBtnState(state: State) {
+        console.log(`\tStreamView:: Verify screen view full screen button is  ${state}`);
+        await verifyComponentState(this.screenViewFullScreenBtn, state);
     }
 
     async verifyScreenViewMicrophoneStatus(status: Status) {
