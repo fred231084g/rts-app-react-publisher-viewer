@@ -15,7 +15,7 @@ type DropdownProps = {
   elementResolver: (element: unknown) => Element;
   onSelect: (data: Element['data']) => void;
   testId?: string;
-  selected?: string;
+  selected: string;
   disabled?: boolean;
   placeholder: string;
 };
@@ -76,6 +76,7 @@ const Dropdown = ({
                   position="relative"
                   pr={10}
                   py={3}
+                  bg="dolbyNeutral.700"
                 >
                   <Text as="div" noOfLines={1} textOverflow="ellipsis" fontSize="14px" fontWeight="500" w="100%">
                     {label}

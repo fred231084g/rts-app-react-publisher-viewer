@@ -23,7 +23,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import './styles/font.css';
-import usePublisher from '@millicast-react/use-publisher';
+import usePublisher, { Bitrate } from '@millicast-react/use-publisher';
 import useMediaDevices from '@millicast-react/use-media-devices';
 import {
   IconMicrophoneOn,
@@ -38,6 +38,7 @@ import {
   IconSimulcast,
   IconInfo,
   IconClose,
+  IconBitrate,
 } from '@millicast-react/dolbyio-icons';
 import VideoView from '@millicast-react/video-view';
 import ParticipantCount from '@millicast-react/participant-count';
@@ -53,11 +54,13 @@ import Dropdown from '@millicast-react/dropdown';
 import useCameraCapabilities, { Resolution } from './hooks/use-camera-capabilities';
 import StatisticsInfo from '@millicast-react/statistics-info';
 import InfoLabel from '@millicast-react/info-label';
+import useNotification from '@millicast-react/use-notification';
 
 const displayShareSourceId = 'DisplayShare';
 
 function App() {
   const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure();
+  const { showError } = useNotification();
 
   const {
     setupPublisher,
@@ -66,14 +69,14 @@ function App() {
     updateStreaming,
     startDisplayStreaming,
     stopDisplayStreaming,
-    codec,
     codecList,
-    updateCodec,
+    bitrateList,
+    updateBitrate,
     publisherState,
     viewerCount,
     linkText,
     statistics,
-  } = usePublisher();
+  } = usePublisher({ handleError: showError });
 
   const {
     cameraList,
@@ -94,16 +97,19 @@ function App() {
     cameraCapabilities,
     cameraSettings,
     microphoneSettings,
-  } = useMediaDevices();
+  } = useMediaDevices({ handleError: showError });
 
   const [isSimulcastEnabled, setIsSimulcastEnabled] = useState(true);
+  const [codec, setCodec] = useState<string>();
+  const [bitrate, setBitrate] = useState<number>(0);
   const resolutionList = useCameraCapabilities(cameraCapabilities);
 
   useEffect(() => {
     setupPublisher(
       import.meta.env.VITE_MILLICAST_STREAM_PUBLISHING_TOKEN,
       import.meta.env.VITE_MILLICAST_STREAM_NAME,
-      import.meta.env.VITE_MILLICAST_STREAM_ID
+      import.meta.env.VITE_MILLICAST_STREAM_ID,
+      import.meta.env.VITE_MILLICAST_VIEWER_BASE_URL
     );
   }, []);
 
@@ -125,6 +131,10 @@ function App() {
       updateStreaming(mediaStream);
     }
   }, [mediaStream]);
+
+  useEffect(() => {
+    if (!codec && codecList.length) setCodec(codecList[0]);
+  }, [codecList]);
 
   useEffect(() => {
     if (!displayStream) stopDisplayStreaming();
@@ -168,6 +178,18 @@ function App() {
 
   const toggleShare = async () => {
     displayStream ? stopDisplayCapture() : await startDisplayCapture();
+  };
+
+  const onSelectBitrate = async (bitrate: number) => {
+    try {
+      if (isStreaming) {
+        await updateBitrate(bitrate);
+      }
+      setBitrate(bitrate);
+    } catch {
+      setBitrate(0);
+      showError(`Failed to set bitrate ${bitrate}`);
+    }
   };
 
   const isStreaming = publisherState === 'streaming';
@@ -236,20 +258,27 @@ function App() {
             <LiveIndicator
               isActive={isStreaming}
               isLoading={publisherState === 'connecting'}
-              start={() => {
+              disabled={publisherState === 'initial' || !mediaStream}
+              start={async () => {
                 if (publisherState == 'ready' && mediaStream) {
-                  if (displayStream) {
-                    startDisplayStreaming({
-                      mediaStream: displayStream,
-                      sourceId: displayShareSourceId,
+                  try {
+                    await startStreaming({
+                      mediaStream,
+                      simulcast: isSimulcastEnabled,
+                      codec,
+                      events: ['viewercount'],
+                      bandwidth: bitrate,
                     });
+                    if (displayStream) {
+                      startDisplayStreaming({
+                        mediaStream: displayStream,
+                        sourceId: displayShareSourceId,
+                      });
+                    }
+                  } catch (err) {
+                    showError(`Failed to start streaming: ${err}`);
+                    setBitrate(0);
                   }
-                  startStreaming({
-                    mediaStream,
-                    simulcast: isSimulcastEnabled,
-                    codec,
-                    events: ['viewercount'],
-                  });
                 }
               }}
               stop={() => {
@@ -259,7 +288,7 @@ function App() {
             />
           </Stack>
           <Stack direction="column" spacing="4" alignItems="flex-end">
-            <ShareLinkButton tooltip={{ placement: 'top' }} linkText={linkText} />
+            {linkText && <ShareLinkButton tooltip={{ placement: 'top' }} linkText={linkText} />}
             {isStreaming && <ParticipantCount count={viewerCount} />}
           </Stack>
         </Flex>
@@ -364,6 +393,7 @@ function App() {
         <Flex direction="row" gap={2} justifyContent="flex-end" alignItems="center">
           {!displayStream && (
             <PopupMenu
+              buttonTitle="Add Source"
               items={[
                 { icon: <IconPresent />, text: displayStream ? 'Stop share' : 'Share screen', onClick: toggleShare },
                 // {
@@ -388,6 +418,7 @@ function App() {
             isDisabled={!(mediaStream && mediaStream.getVideoTracks().length)}
             icon={<IconSettings />}
             borderRadius="50%"
+            ml="16px"
             reversed
           />
         </Flex>
@@ -457,9 +488,32 @@ function App() {
                         label: element as string,
                         data: element as string,
                       })}
-                      onSelect={(data) => updateCodec(data as string)}
-                      selected={codec || (codecList.length !== 0 ? codecList[0] : undefined)}
+                      onSelect={(data) => setCodec(data as string)}
+                      selected={codec || codecList[0]}
                       placeholder="Codec"
+                    />
+                  </Box>
+                )}
+                {bitrateList.length && (
+                  <Box>
+                    <Dropdown
+                      leftIcon={<IconBitrate />}
+                      disabled={bitrateList.length === 0}
+                      testId="bitrateSelect"
+                      elementsList={bitrateList}
+                      elementResolver={(element) => {
+                        const bitrate = element as Bitrate;
+                        return {
+                          id: bitrate.name,
+                          label: bitrate.name,
+                          data: bitrate.value,
+                        };
+                      }}
+                      onSelect={(data) => {
+                        onSelectBitrate(data as number);
+                      }}
+                      selected={bitrateList.find((b) => b.value === bitrate)?.name || bitrateList[0].name}
+                      placeholder="Bitrate"
                     />
                   </Box>
                 )}
@@ -483,6 +537,7 @@ function App() {
                     />
                   </Box>
                 )}
+
                 {!isStreaming && (
                   <ToggleButton
                     test-id="simulcastSwitch"

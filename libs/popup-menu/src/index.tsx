@@ -2,7 +2,8 @@ import React from 'react';
 import { Menu, MenuButton, MenuList, MenuItem, Button, Box, Text } from '@chakra-ui/react';
 import { IconAdd } from '@millicast-react/dolbyio-icons';
 
-type AddSourceProps = {
+type PopupMenuProps = {
+  buttonTitle: string;
   items: {
     icon: React.ReactNode;
     text: string;
@@ -11,7 +12,7 @@ type AddSourceProps = {
   }[];
 };
 
-const PopupMenu = ({ items }: AddSourceProps) => {
+const PopupMenu = ({ buttonTitle, items }: PopupMenuProps) => {
   return (
     <Menu placement="top" gutter={14} autoSelect={false}>
       <MenuButton
@@ -34,7 +35,7 @@ const PopupMenu = ({ items }: AddSourceProps) => {
           bg: 'dolbyPurple.500',
         }}
       >
-        Add source
+        {buttonTitle}
       </MenuButton>
       <MenuList data-id="addSourceMenu" bg="dolbyNeutral.800" w="200px" color="white" border="none" p="0" overflow="hidden">
         {items.map(({ icon, text, onClick, isDisabled }) => (
@@ -42,6 +43,7 @@ const PopupMenu = ({ items }: AddSourceProps) => {
             test-id={text.replace(' ', '')}
             key={text}
             onClick={onClick}
+            bg="dolbyNeutral.800"
             _hover={{ bg: 'dolbyNeutral.500' }}
             _active={{ bg: 'dolbyNeutral.500' }}
             _focus={{ bg: 'dolbyNeutral.500' }}
