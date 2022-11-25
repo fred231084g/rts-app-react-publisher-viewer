@@ -50,25 +50,25 @@ Before(async function (this: ScenarioWorld, scenario: ITestCaseHookParameter) {
   console.log('\tHooks:: Before:: Open context and page');
   this.browser = browserMgr.browser;
   this.context = await browserMgr.newContext(this);
-  this.publisherPage = await this.context.newPage();
-  this.viewerPage = await this.context.newPage();
-  this.globalVariables['publisherPage'] = this.publisherPage;
-  this.globalVariables['viewerPage'] = this.viewerPage;
+  this.publisherAppPage = await this.context.newPage();
+  this.viewerAppPage = await this.context.newPage();
+  this.globalVariables['publisherAppPage'] = this.publisherAppPage;
+  this.globalVariables['viewerAppPage'] = this.viewerAppPage;
 
-  this.publisherConsoleLogs = BrowserManager.monitorConsoleLogs(this.publisherPage);
-  this.publisherConsoleErrorLogs = BrowserManager.monitorConsoleErrorLogs(this.publisherPage);
+  this.publisherConsoleLogs = BrowserManager.monitorConsoleLogs(this.publisherAppPage);
+  this.publisherConsoleErrorLogs = BrowserManager.monitorConsoleErrorLogs(this.publisherAppPage);
 });
 
 After(async function (this: ScenarioWorld, scenario: ITestCaseHookParameter) {
   console.log(`SCENARIO END`);
   console.log('\tHooks:: After:: Close context and page');
 
-  const videoFile = (await this.publisherPage.video()?.path()) as string;
+  const videoFile = (await this.publisherAppPage.video()?.path()) as string;
   const traceFile = await stopTrace(this);
   await screenshot(this, scenario);
 
-  await this.viewerPage.close();
-  await this.publisherPage.close();
+  await this.viewerAppPage.close();
+  await this.publisherAppPage.close();
   await this.context.close();
 
   retainArtifacts(videoFile, traceFile, this, scenario);
@@ -109,12 +109,12 @@ async function screenshot(scenarioWorld: ScenarioWorld, scenario: ITestCaseHookP
       screenshot.publisher = `${screenshotDir}/${scenarioWorld.scenarioNameFormated}-publisher.png`;
       screenshot.viewer = `${screenshotDir}/${scenarioWorld.scenarioNameFormated}-viewer.png`;
 
-      const pScreenshot = await scenarioWorld.publisherPage.screenshot({
+      const pScreenshot = await scenarioWorld.publisherAppPage.screenshot({
         path: screenshot.publisher,
       });
       await scenarioWorld.attach(pScreenshot, 'image/png');
 
-      const vScreenshot = await scenarioWorld.viewerPage.screenshot({
+      const vScreenshot = await scenarioWorld.viewerAppPage.screenshot({
         path: screenshot.viewer,
       });
       await scenarioWorld.attach(vScreenshot, 'image/png');

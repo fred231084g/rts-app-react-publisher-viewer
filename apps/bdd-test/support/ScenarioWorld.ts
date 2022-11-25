@@ -10,9 +10,9 @@ export class ScenarioWorld extends World {
 
   context!: BrowserContext;
 
-  publisherPage!: Page;
+  publisherAppPage!: Page;
 
-  viewerPage!: Page;
+  viewerAppPage!: Page;
 
   options!: PlaywrightOptions;
 

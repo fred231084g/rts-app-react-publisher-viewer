@@ -80,7 +80,7 @@ export class HeaderFooter {
     
     async verifyViewersCount(count: string) {
         console.log(`\tHeaderFooter:: Verify participant count is ${count}`);
-        await expect(this.viewersCountLbl).toHaveText(`${count} participants`);
+        await expect(this.viewersCountLbl).toHaveText(count);
     }
 
     async verifyGetStartedHeader(text: string) {

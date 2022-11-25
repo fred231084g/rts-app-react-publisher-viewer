@@ -4,7 +4,7 @@ import { Locator, Page } from 'playwright';
 import { State } from '../utils/type';
 import { AddSource } from './components/AddSource';
 import { HeaderFooter } from './components/HeaderFooter';
-import { PublisherSetting } from './components/PublisherSetting';
+import { Setting } from './components/Setting';
 import { StreamView } from './components/StreamView';
 import { verifyComponentState } from './components/ComponentUtils';
 import { StreamStats } from './components/StreamStats';
@@ -14,12 +14,12 @@ export class PublisherPreviewPage {
 
   readonly goLiveBtn: Locator;
 
-  readonly goLiveSelector = '[test-id=live-indicator]';
+  readonly goLiveSelector = '[test-id=start-live-indicator]';
 
   private headerFooterComponent: HeaderFooter;
   private streamViewComponent: StreamView;
   private addSourceComponent: AddSource;
-  private publisherSettingComponent: PublisherSetting;
+  private settingComponent: Setting;
   private streamStatsComponent: StreamStats;
   
   constructor(page: Page) {
@@ -28,7 +28,7 @@ export class PublisherPreviewPage {
     this.headerFooterComponent = new HeaderFooter(page);
     this.streamViewComponent = new StreamView(page);
     this.addSourceComponent = new AddSource(page);
-    this.publisherSettingComponent = new PublisherSetting(page);
+    this.settingComponent = new Setting(page);
     this.streamStatsComponent = new StreamStats(page);
 
   }
@@ -43,6 +43,7 @@ export class PublisherPreviewPage {
   async waitForPageLoad() {
     console.log(`\tPublisherPreviewPage:: Wait for page to load`);
     await this.page.waitForSelector(this.goLiveSelector);
+    await this.verifyGoLiveBtnState('visible');
     await this.verifyGoLiveBtnState('enabled');
   }
 
@@ -74,8 +75,8 @@ export class PublisherPreviewPage {
     return this.addSourceComponent;
   }
 
-  getSetting(): PublisherSetting{
-    return this.publisherSettingComponent;
+  getSetting(): Setting{
+    return this.settingComponent;
   }
 
   getStreamStats(): StreamStats{

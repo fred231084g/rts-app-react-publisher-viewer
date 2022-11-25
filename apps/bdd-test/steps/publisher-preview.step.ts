@@ -12,26 +12,17 @@ Given(/^a publisher is on the (Preview) page$/, async function (this: ScenarioWo
   // a publisher is on the (Preview|Stream) page
 });
 
-When(/^the publisher starts streaming on the (Preview) page$/, async function (this: ScenarioWorld, pageName) {
+
+When(/^the publisher clicks on the go live button on the (Preview) page$/, async function (this: ScenarioWorld, pageName) {
   const pageObject = getPageObject(this, `Publisher${pageName}Page`);
-  await pageObject.startStreaming();
+  await pageObject.goLive();
 });
 
-Then(
-  /^on the publisher (Preview) page heading should be (visible|hidden|enabled|disabled)$/,
-  async function (this: ScenarioWorld, pageName, state) {
-    const pageObject = getPageObject(this, `Publisher${pageName}Page`);
-    await pageObject.verifyHeaderLblState(state);
-  }
-);
+When(/^the publisher turns (Off|On) simulcast input switch on the (Preview) page$/, async function (this: ScenarioWorld, status, pageName) {
+  const pageObject = getPageObject(this, `Publisher${pageName}Page`);
+  await pageObject.getSetting().toggleSimulcast(status);
+});
 
-Then(
-  /^on the publisher (Preview) page description should be (visible|hidden|enabled|disabled)$/,
-  async function (this: ScenarioWorld, pageName, state) {
-    const pageObject = getPageObject(this, `Publisher${pageName}Page`);
-    await pageObject.verifyDescriptionLblState(state);
-  }
-);
 
 Then(
   /^on the publisher (Preview) page go live button should be (visible|hidden|enabled|disabled)$/,
@@ -42,20 +33,21 @@ Then(
 );
 
 Then(
-  /^on the publisher (Preview) page heading value should be "([^"]*)"$/,
-  async function (this: ScenarioWorld, pageName, value) {
+  /^on the publisher (Preview) page simulcast input switch should be (visible|hidden|enabled|disabled)$/,
+  async function (this: ScenarioWorld, pageName, state) {
     const pageObject = getPageObject(this, `Publisher${pageName}Page`);
-    await pageObject.getHeaderFooter().verifyGetStartedHeader(value);
+    await pageObject.getSetting().verifySimulcastSwitchInputState(state);
   }
 );
 
 Then(
-  /^on the publisher (Preview) page description value should be "([^"]*)"$/,
-  async function (this: ScenarioWorld, pageName, value) {
+  /^on the publisher (Preview) page simulcast input switch should be turned (On|Off)$/,
+  async function (this: ScenarioWorld, pageName, state) {
     const pageObject = getPageObject(this, `Publisher${pageName}Page`);
-    await pageObject.getHeaderFooter().verifyGetStartedDesc(value);
+    await pageObject.getSetting().verifySimulcastSwitchStatus(state);
   }
 );
+
 
 Then(
   /^on the publisher (Preview) page go live button text should be "([^"]*)"$/,
@@ -64,6 +56,8 @@ Then(
     await pageObject.verifyGoLiveBtnText(value);
   }
 );
+
+
 
 // When('the publisher copy the viewer link', async () => {
 //   await previewPage.copyViewerLink();

@@ -3,7 +3,7 @@ import { Status, State } from '../../utils/type';
 import { expect } from "@playwright/test";
 import { verifyComponentState } from "./ComponentUtils";
 
-export class PublisherSetting {
+export class Setting {
     private page: Page
 
     readonly settingBtn: Locator
@@ -90,9 +90,28 @@ export class PublisherSetting {
         await this.page.locator(this.codecSelectSelector, {hasText: codec}).click();
     }
 
+    async turnOnSimulcast() {
+        console.log(`\tStreamView:: Turn on Simulcast`);
+        const actualStatus = (await this.simulcastSwitchInput.isChecked()) ? 'On' : 'Off';
+
+        if (actualStatus === 'Off') {
+          await this.simulcastSwitchLbl.click();
+        }
+    }
+    
+    async turnOffSimulcast() {
+        console.log(`\tStreamView:: Turn off Simulcast`);
+        const actualStatus = (await this.simulcastSwitchInput.isChecked()) ? 'On' : 'Off';
+
+        if (actualStatus === 'On') {
+          await this.simulcastSwitchLbl.click();
+        }
+    }
+
     async toggleSimulcast(status: Status){
         console.log(`\tSetting: Simulcast - ${status}`);
-        status === 'On' ? this.simulcastSwitchInput.check() : this.simulcastSwitchInput.uncheck();
+        // status === 'On' ? await this.simulcastSwitchInput.check({force: true}) : await this.simulcastSwitchInput.uncheck({force: true});
+        status === 'On' ? await this.turnOnSimulcast() : await this.turnOffSimulcast();
     }
 
     async verifySettingBtnState(state: State) {
@@ -179,6 +198,11 @@ export class PublisherSetting {
         await expect(actualOptions).toEqual(options);
     }
 
+    async verifyBitrateDropdownSelected(bitrate: string){
+        console.log(`\tSetting: Verify bitrate dropdown selected option - ${bitrate}`)
+        await expect(this.bitrateDefault).toHaveText(bitrate)
+    }
+
     async verifyCodecDropdownSelected(codec: string){
         console.log(`\tSetting: Verify codec dropdown selected option - ${codec}`)
         await expect(this.codecDefault).toHaveText(codec)
@@ -213,5 +237,25 @@ export class PublisherSetting {
     async verifySimulcastSwitchInputState(state: State){
         console.log(`\tSetting: Verify simulcast switch input state - ${state}`)
         await verifyComponentState(this.simulcastSwitchInput, state);
+    }
+
+    async verifyVideoQualityDropdownSelected(codec: string){
+        console.log(`\tSetting: Verify video quality dropdown selected option - ${codec}`)
+        await expect(this.qualityDefault).toHaveText(codec)
+    }
+
+    async verifyVideoQualityDropdownOptions(options: [string]){
+        console.log(`\tSetting: Verify video quality dropdown options - ${options}`)
+        const actualOptions = [];
+        const count = await this.qualityOptions.count();
+        for (let i = 0; i < count; ++i){
+            actualOptions.push(await this.qualityOptions.nth(i).textContent());
+        }
+        await expect(actualOptions).toEqual(options);
+    }
+
+    async verifyVideoQualityDropdownState(state: State){
+        console.log(`\tSetting: Verify video quality dropdown state - ${state}`)
+        await verifyComponentState(this.qualityDefault, state);
     }
 }

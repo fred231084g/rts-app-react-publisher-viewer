@@ -5,7 +5,7 @@ import { Locator, Page } from 'playwright';
 import { State } from '../utils/type';
 import { AddSource } from './components/AddSource';
 import { HeaderFooter } from './components/HeaderFooter';
-import { PublisherSetting } from './components/PublisherSetting';
+import { Setting } from './components/Setting';
 import { StreamStats } from './components/StreamStats';
 import { StreamView } from './components/StreamView';
 import { verifyComponentState } from './components/ComponentUtils';
@@ -15,12 +15,12 @@ export class PublisherStreamPage {
 
   readonly stopBtn: Locator;
 
-  readonly stopSelector = '[test-id=live-indicator]';
+  readonly stopSelector = '[test-id=stop-live-indicator]';
 
   private headerFooterComponent: HeaderFooter;
   private streamViewComponent: StreamView;
   private addSourceComponent: AddSource;
-  private publisherSettingComponent: PublisherSetting;
+  private settingComponent: Setting;
   private streamStatsComponent: StreamStats;
 
   constructor(page: Page) {
@@ -29,7 +29,7 @@ export class PublisherStreamPage {
     this.headerFooterComponent = new HeaderFooter(page);
     this.streamViewComponent = new StreamView(page);
     this.addSourceComponent = new AddSource(page);
-    this.publisherSettingComponent = new PublisherSetting(page);
+    this.settingComponent = new Setting(page);
     this.streamStatsComponent = new StreamStats(page);
   }
 
@@ -37,6 +37,7 @@ export class PublisherStreamPage {
     console.log('\tPublisherStreamPage:: Wait for page to load');
     await this.page.bringToFront();
     await this.page.waitForSelector(this.stopSelector);
+    await this.verifyStopBtnState('visible');
     await this.verifyStopBtnState('enabled');
   }
 
@@ -57,23 +58,23 @@ export class PublisherStreamPage {
   }
 
 
-  async getHeaderFooter(){
+  getHeaderFooter(): HeaderFooter{
     return this.headerFooterComponent;
   }
 
-  async getstreamView(){
+  getStreamView(): StreamView{
     return this.streamViewComponent;    
   }
 
-  async getaddSource(){
+  getAddSource(): AddSource{
     return this.addSourceComponent;
   }
 
-  async getSetting(){
-    return this.publisherSettingComponent;
+  getSetting(): Setting{
+    return this.settingComponent;
   }
 
-  async getStreamStats(){
+  getStreamStats(): StreamStats{
     return this.streamStatsComponent;
   }
 }
