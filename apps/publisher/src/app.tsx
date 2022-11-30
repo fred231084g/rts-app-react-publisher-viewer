@@ -39,6 +39,7 @@ import {
   IconInfo,
   IconClose,
   IconBitrate,
+  IconAddCamera,
 } from '@millicast-react/dolbyio-icons';
 import VideoView from '@millicast-react/video-view';
 import ParticipantCount from '@millicast-react/participant-count';
@@ -395,12 +396,11 @@ function App() {
               buttonTitle="Add Source"
               items={[
                 { icon: <IconPresent />, text: displayStream ? 'Stop share' : 'Share screen', onClick: toggleShare },
-                // {
-                //   icon: <IconAddCamera />,
-                //   text: 'Add cameras',
-                //   onClick: () => console.log('cameras'),
-                //   isDisabled: true,
-                // },
+                {
+                  icon: <IconAddCamera />,
+                  text: 'Add cameras',
+                  onClick: () => console.log('cameras'),
+                },
                 // {
                 //   icon: <IconStream />,
                 //   text: 'Stream local file',
