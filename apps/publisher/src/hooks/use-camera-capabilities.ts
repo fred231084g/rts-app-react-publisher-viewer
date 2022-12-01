@@ -45,17 +45,20 @@ const allResolutions: Resolution[] = [
 ];
 
 // TODO: add more helper functions to this hook
-const useCameraCapabilities: (cameraCapabilities?: MediaTrackCapabilities) => Resolution[] = (cameraCapabilities) => {
-  const supportedResolutions = useMemo<Resolution[]>(() => {
-    return allResolutions.filter((resolution) => {
-      return (
-        resolution.width <= (cameraCapabilities?.width?.max ?? 0) &&
-        resolution.height <= (cameraCapabilities?.height?.max ?? 0)
-      );
-    });
-  }, [cameraCapabilities]);
+const useCameraCapabilities = () => {
+  const getSupportedResolutions = (cameraCapabilities?: MediaTrackCapabilities) =>
+    useMemo<Resolution[]>(() => {
+      return allResolutions.filter((resolution) => {
+        return (
+          resolution.width <= (cameraCapabilities?.width?.max ?? 0) &&
+          resolution.height <= (cameraCapabilities?.height?.max ?? 0)
+        );
+      });
+    }, [cameraCapabilities]);
 
-  return supportedResolutions;
+  return {
+    getSupportedResolutions,
+  };
 };
 
 export default useCameraCapabilities;

@@ -21,6 +21,7 @@ import {
   Text,
   useDisclosure,
   VStack,
+  Button,
 } from '@chakra-ui/react';
 import './styles/font.css';
 import usePublisher, { Bitrate } from '@millicast-react/use-publisher';
@@ -86,8 +87,6 @@ function App() {
     setCamera,
     microphone,
     setMicrophone,
-    isAudioEnabled,
-    isVideoEnabled,
     toggleAudio,
     toggleVideo,
     mediaStream,
@@ -98,12 +97,14 @@ function App() {
     cameraCapabilities,
     cameraSettings,
     microphoneSettings,
+    streams,
+    addStream,
   } = useMediaDevices({ handleError: showError });
 
   const [isSimulcastEnabled, setIsSimulcastEnabled] = useState(true);
   const [codec, setCodec] = useState<string>();
   const [bitrate, setBitrate] = useState<number>(0);
-  const resolutionList = useCameraCapabilities(cameraCapabilities);
+  const { getSupportedResolutions } = useCameraCapabilities();
 
   useEffect(() => {
     const date = new Date();
@@ -128,15 +129,15 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (mediaStream) {
-      updateStreaming(mediaStream);
-    }
-  }, [mediaStream]);
+  // useEffect(() => {
+  //   if (mediaStream) {
+  //     updateStreaming(mediaStream);
+  //   }
+  // }, [mediaStream]);
 
-  useEffect(() => {
-    if (!codec && codecList.length) setCodec(codecList[0]);
-  }, [codecList]);
+  // useEffect(() => {
+  //   if (!codec && codecList.length) setCodec(codecList[0]);
+  // }, [codecList]);
 
   useEffect(() => {
     if (!displayStream) stopDisplayStreaming();
@@ -154,29 +155,29 @@ function App() {
     return codecList;
   }, [codecList, isSimulcastEnabled]);
 
-  const onSelectVideoResolution = useCallback(
-    async (resolution: Resolution) => {
-      const videoConstraints = cameraSettings as MediaTrackConstraintSet;
-      if (videoConstraints && cameraSettings) {
-        videoConstraints.deviceId = { exact: cameraSettings?.deviceId };
-        videoConstraints.width = { exact: resolution.width };
-        videoConstraints.height = { exact: resolution.height };
-        delete videoConstraints.frameRate;
-        delete videoConstraints.aspectRatio;
-      } else {
-        return;
-      }
-      const audioConstraints = mediaStream?.getAudioTracks()[0].getSettings() ?? {};
-      try {
-        await applyMediaTrackConstraints(audioConstraints, videoConstraints);
-      } catch (error) {
-        videoConstraints.width = { ideal: resolution.width };
-        videoConstraints.height = { ideal: resolution.height };
-        await applyMediaTrackConstraints(audioConstraints, videoConstraints);
-      }
-    },
-    [resolutionList]
-  );
+  // const onSelectVideoResolution = useCallback(
+  //   async (resolution: Resolution) => {
+  //     const videoConstraints = cameraSettings as MediaTrackConstraintSet;
+  //     if (videoConstraints && cameraSettings) {
+  //       videoConstraints.deviceId = { exact: cameraSettings?.deviceId };
+  //       videoConstraints.width = { exact: resolution.width };
+  //       videoConstraints.height = { exact: resolution.height };
+  //       delete videoConstraints.frameRate;
+  //       delete videoConstraints.aspectRatio;
+  //     } else {
+  //       return;
+  //     }
+  //     const audioConstraints = mediaStream?.getAudioTracks()[0].getSettings() ?? {};
+  //     try {
+  //       await applyMediaTrackConstraints(audioConstraints, videoConstraints);
+  //     } catch (error) {
+  //       videoConstraints.width = { ideal: resolution.width };
+  //       videoConstraints.height = { ideal: resolution.height };
+  //       await applyMediaTrackConstraints(audioConstraints, videoConstraints);
+  //     }
+  //   },
+  //   [resolutionList]
+  // );
 
   const toggleShare = async () => {
     displayStream ? stopDisplayCapture() : await startDisplayCapture();
@@ -196,45 +197,45 @@ function App() {
 
   const isStreaming = publisherState === 'streaming';
 
-  const MediaControlBar = () => (
-    <ControlBar
-      controls={[
-        {
-          key: 'toggleMicrophoneButton',
-          'test-id': 'toggleMicrophoneButton',
-          tooltip: { label: 'Toggle microphone', placement: 'top' },
-          onClick: () => {
-            toggleAudio();
-          },
-          isActive: !isAudioEnabled,
-          isDisabled: !(mediaStream && mediaStream.getAudioTracks().length),
-          icon: isAudioEnabled ? <IconMicrophoneOn /> : <IconMicrophoneOff />,
-        },
-        {
-          key: 'toggleCameraButton',
-          'test-id': 'toggleCameraButton',
-          tooltip: { label: 'Toggle camera', placement: 'top' },
-          onClick: () => {
-            toggleVideo();
-          },
-          isActive: !isVideoEnabled,
-          isDisabled: !(mediaStream && mediaStream.getVideoTracks().length),
-          icon: isVideoEnabled ? <IconCameraOn /> : <IconCameraOff />,
-        },
-      ]}
-    />
-  );
+  // const MediaControlBar = () => (
+  //   <ControlBar
+  //     controls={[
+  //       {
+  //         key: 'toggleMicrophoneButton',
+  //         'test-id': 'toggleMicrophoneButton',
+  //         tooltip: { label: 'Toggle microphone', placement: 'top' },
+  //         onClick: () => {
+  //           toggleAudio();
+  //         },
+  //         isActive: !isAudioEnabled,
+  //         isDisabled: !(mediaStream && mediaStream.getAudioTracks().length),
+  //         icon: isAudioEnabled ? <IconMicrophoneOn /> : <IconMicrophoneOff />,
+  //       },
+  //       {
+  //         key: 'toggleCameraButton',
+  //         'test-id': 'toggleCameraButton',
+  //         tooltip: { label: 'Toggle camera', placement: 'top' },
+  //         onClick: () => {
+  //           toggleVideo();
+  //         },
+  //         isActive: !isVideoEnabled,
+  //         isDisabled: !(mediaStream && mediaStream.getVideoTracks().length),
+  //         icon: isVideoEnabled ? <IconCameraOn /> : <IconCameraOff />,
+  //       },
+  //     ]}
+  //   />
+  // );
 
-  const displayStreamLabel = useMemo(() => {
-    if (displayStream) {
-      if (displayStream.getVideoTracks()[0].label.length > 0) {
-        return displayStream.getVideoTracks()[0].label.split(':')[0];
-      } else {
-        return 'Screen Share';
-      }
-    }
-    return '';
-  }, [displayStream]);
+  // const displayStreamLabel = useMemo(() => {
+  //   if (displayStream) {
+  //     if (displayStream.getVideoTracks()[0].label.length > 0) {
+  //       return displayStream.getVideoTracks()[0].label.split(':')[0];
+  //     } else {
+  //       return 'Screen Share';
+  //     }
+  //   }
+  //   return '';
+  // }, [displayStream]);
 
   return (
     <Flex direction="column" minH="100vh" w="100vw" bg="background" p="6">
@@ -304,9 +305,51 @@ function App() {
           </VStack>
         )}
         <Stack direction="row" justifyContent="center" alignItems="center" w="100%" spacing="6">
-          {mediaStream && (
-            <Stack direction="column" justifyContent="center" alignItems="center" spacing={4}>
-              (
+          {[...streams].map(([id, { display, device, state }]) => (
+            <Stack direction="column" key={id} justifyContent="center" alignItems="center" spacing={4}>
+              <VideoView
+                width="300px"
+                height="169px"
+                mirrored={true}
+                mediaStream={display}
+                displayFullscreenButton={false}
+                displayVideo={state.displayVideo}
+                label={device?.camera?.label}
+                placeholderNode={
+                  <Box color="dolbyNeutral.700" position="absolute" width="174px" height="174px">
+                    <IconProfile />
+                  </Box>
+                }
+                showDotIndicator={isStreaming}
+              />
+              <ControlBar
+                controls={[
+                  {
+                    key: 'toggleMicrophoneButton',
+                    'test-id': 'toggleMicrophoneButton',
+                    tooltip: { label: 'Toggle microphone', placement: 'top' },
+                    onClick: () => {
+                      toggleAudio(id);
+                    },
+                    isActive: !state.muteAudio,
+                    icon: state.muteAudio ? <IconMicrophoneOn /> : <IconMicrophoneOff />,
+                  },
+                  {
+                    key: 'toggleCameraButton',
+                    'test-id': 'toggleCameraButton',
+                    tooltip: { label: 'Toggle camera', placement: 'top' },
+                    onClick: () => {
+                      toggleVideo(id);
+                    },
+                    isActive: !state.displayVideo,
+                    icon: state.displayVideo ? <IconCameraOn /> : <IconCameraOff />,
+                  },
+                ]}
+              />
+            </Stack>
+          ))}
+          {/* {mediaStream && (
+            <>
               <VideoView
                 width={displayStream ? '688px' : '836px'}
                 height={displayStream ? '382px' : '464px'}
@@ -322,10 +365,10 @@ function App() {
                 }
                 showDotIndicator={isStreaming}
               />
-              <MediaControlBar />)
-            </Stack>
-          )}
-          {displayStream && (
+              <MediaControlBar />
+            </>
+          )} */}
+          {/* {displayStream && (
             <Stack direction="column" spacing={4}>
               <VideoView
                 width="688px"
@@ -348,7 +391,7 @@ function App() {
                 ]}
               />
             </Stack>
-          )}
+          )} */}
         </Stack>
       </Flex>
       <HStack alignItems="center" w="96%" h="48px" pos="fixed" bottom="32px">
@@ -516,7 +559,7 @@ function App() {
                     />
                   </Box>
                 )}
-                {mediaStream && resolutionList.length && cameraSettings && (
+                {/* {mediaStream && resolutionList.length && cameraSettings && (
                   <Box>
                     <Dropdown
                       leftIcon={<IconResolution />}
@@ -535,7 +578,7 @@ function App() {
                       placeholder="Resolution"
                     />
                   </Box>
-                )}
+                )} */}
 
                 {!isStreaming && (
                   <ToggleButton

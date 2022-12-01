@@ -281,7 +281,7 @@ const Content = () => {
 
               {hasMultiStream && (
                 <HStack spacing={4}>
-                  {Array.from(remoteTrackSources).map(([id, source]) => {
+                  {[...remoteTrackSources].map(([id, source]) => {
                     if (id !== 'main') {
                       const attributes = streamsAttributes.get(id);
                       return (

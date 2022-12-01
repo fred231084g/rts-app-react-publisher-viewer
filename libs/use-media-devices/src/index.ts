@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import useState from 'react-usestateref';
 export type MediaDevices = {
   cameraList: InputDeviceInfo[];
@@ -7,10 +7,6 @@ export type MediaDevices = {
   setMicrophone: (device: InputDeviceInfo) => void;
   camera?: InputDeviceInfo;
   microphone?: InputDeviceInfo;
-  isAudioEnabled: boolean;
-  isVideoEnabled: boolean;
-  toggleAudio: () => void;
-  toggleVideo: () => void;
   mediaStream?: MediaStream;
   startDisplayCapture: () => Promise<void>;
   stopDisplayCapture: () => void;
@@ -25,6 +21,11 @@ export type MediaDevices = {
   // Current settings of selected camera and microphone
   cameraSettings?: MediaTrackSettings;
   microphoneSettings?: MediaTrackSettings;
+  streams: StreamsReducerState;
+  addStream: (type: StreamTypes, microphone?: InputDeviceInfo, camera?: InputDeviceInfo) => Promise<void>;
+  toggleAudio: (id: StreamId) => void;
+  toggleVideo: (id: StreamId) => void;
+  reset: () => void;
 };
 
 export enum StreamTypes {
@@ -44,9 +45,20 @@ type Stream = {
     microphone: MediaTrackSettings;
   };
   device: {
-    camera: InputDeviceInfo;
-    microphone: InputDeviceInfo;
+    camera?: InputDeviceInfo;
+    microphone?: InputDeviceInfo;
   };
+  state: {
+    muteAudio: boolean;
+    displayVideo: boolean;
+    codec: string | null;
+  };
+};
+
+const initialStreamState: Stream['state'] = {
+  muteAudio: true,
+  displayVideo: true,
+  codec: null,
 };
 
 type StreamId = string;
@@ -55,21 +67,91 @@ type StreamsReducerState = Map<StreamId, Stream>;
 
 enum StreamsActionType {
   ADD_STREAM = 'ADD_STREAM',
+  REMOVE_STREAM = 'REMOVE_STREAM',
+  RESET = 'RESET',
+  TOGGLE_AUDIO = 'TOGGLE_AUDIO',
+  TOGGLE_VIDEO = 'TOGGLE_VIDEO',
 }
 
-type StreamsAction = {
-  type: StreamsActionType.ADD_STREAM;
-  id: StreamId;
-  stream: Stream;
+type StreamsAction =
+  | {
+      type: StreamsActionType.RESET;
+    }
+  | {
+      type: StreamsActionType.ADD_STREAM;
+      id: StreamId;
+      stream: Stream;
+    }
+  | {
+      type: StreamsActionType.REMOVE_STREAM | StreamsActionType.TOGGLE_AUDIO | StreamsActionType.TOGGLE_VIDEO;
+      id: StreamId;
+    };
+
+const stopTracks = (stream: MediaStream) => {
+  stream.getTracks().forEach((track) => {
+    track.stop();
+  });
 };
 
 const streamsReducer = (state: StreamsReducerState, action: StreamsAction) => {
   switch (action.type) {
+    case StreamsActionType.RESET: {
+      [...state].forEach(([_, stream]) => {
+        stopTracks(stream.display);
+      });
+      return new Map();
+    }
     case StreamsActionType.ADD_STREAM: {
       const updated = new Map(state);
       updated.set(action.id, action.stream);
       return updated;
     }
+    case StreamsActionType.REMOVE_STREAM: {
+      const prev = state.get(action.id);
+      const updated = new Map(state);
+      if (prev) {
+        stopTracks(prev.display);
+      }
+      updated.delete(action.id);
+      return updated;
+    }
+    case StreamsActionType.TOGGLE_AUDIO: {
+      const prev = state.get(action.id);
+      const updated = new Map(state);
+      if (prev) {
+        const audioTracks = prev.display.getAudioTracks();
+        if (audioTracks && audioTracks.length) {
+          audioTracks[0].enabled = !audioTracks[0].enabled;
+          updated.set(action.id, {
+            ...prev,
+            state: {
+              ...prev.state,
+              muteAudio: !prev.state.muteAudio,
+            },
+          });
+        }
+      }
+      return updated;
+    }
+    case StreamsActionType.TOGGLE_VIDEO: {
+      const prev = state.get(action.id);
+      const updated = new Map(state);
+      if (prev) {
+        const videoTracks = prev.display.getVideoTracks();
+        if (videoTracks && videoTracks.length) {
+          videoTracks[0].enabled = !videoTracks[0].enabled;
+          updated.set(action.id, {
+            ...prev,
+            state: {
+              ...prev.state,
+              displayVideo: !prev.state.displayVideo,
+            },
+          });
+        }
+      }
+      return updated;
+    }
+
     default:
       console.error('Unknown action');
       return state;
@@ -95,9 +177,6 @@ const useMediaDevices = ({ handleError }: UseMediaDevicesArguments = {}): MediaD
 
   const [camera, setCamera] = useState<InputDeviceInfo>();
   const [microphone, setMicrophone] = useState<InputDeviceInfo>();
-
-  const [isAudioEnabled, setIsAudioEnabled] = useState<boolean>(true);
-  const [isVideoEnabled, setIsVideoEnabled] = useState<boolean>(true);
 
   const [mediaStream, setMediaStream, mediaStreamRef] = useState<MediaStream>();
   const [displayStream, setDisplayStream, displayStreamRef] = useState<MediaStream>();
@@ -127,62 +206,82 @@ const useMediaDevices = ({ handleError }: UseMediaDevicesArguments = {}): MediaD
     return Promise.resolve({ cameraList, microphoneList });
   };
 
-  const addStream = async (type: StreamTypes, microphone: InputDeviceInfo, camera: InputDeviceInfo) => {
+  const addStream: MediaDevices['addStream'] = async (type, microphone, camera) => {
     try {
-      console.log(microphone);
-      console.log(camera);
-      const constraints = {
-        audio: {
-          deviceId: { exact: microphone.deviceId },
-        },
-        video: {
-          deviceId: { exact: camera.deviceId },
-          ...idealCameraConfig,
-        },
-      };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      const audioTracks = stream.getAudioTracks()[0];
-      const videoTracks = stream.getAudioTracks()[0];
-      dispatch({
-        type: StreamsActionType.ADD_STREAM,
-        id: stream.id,
-        stream: {
-          type,
-          display: stream,
-          capabilities: {
-            microphone: audioTracks.getCapabilities(),
-            camera: videoTracks.getCapabilities(),
+      let stream;
+      if (type === StreamTypes.MEDIA) {
+        if (microphone && camera) {
+          const constraints = {
+            audio: {
+              deviceId: { exact: microphone.deviceId },
+            },
+            video: {
+              deviceId: { exact: camera.deviceId },
+              ...idealCameraConfig,
+            },
+          };
+          stream = await navigator.mediaDevices.getUserMedia(constraints);
+        }
+      } else {
+        const constraints = {
+          video: { cursor: 'always' },
+          audio: true,
+        } as DisplayMediaStreamConstraints;
+        stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+      }
+      if (stream) {
+        const audioTracks = stream.getAudioTracks()[0];
+        const videoTracks = stream.getAudioTracks()[0];
+        dispatch({
+          type: StreamsActionType.ADD_STREAM,
+          id: stream.id,
+          stream: {
+            type,
+            display: stream,
+            capabilities: {
+              microphone: audioTracks.getCapabilities(),
+              camera: videoTracks.getCapabilities(),
+            },
+            settings: {
+              microphone: audioTracks.getSettings(),
+              camera: videoTracks.getSettings(),
+            },
+            device: {
+              microphone,
+              camera,
+            },
+            state: initialStreamState,
           },
-          settings: {
-            microphone: audioTracks.getSettings(),
-            camera: videoTracks.getSettings(),
-          },
-          device: {
-            microphone,
-            camera,
-          },
-        },
-      });
+        });
+      }
     } catch (error: unknown) {
       console.log(error);
       _handleError(error);
     }
   };
 
-  const initializeDeviceList = useCallback(async () => {
+  const toggleAudio = (id: StreamId) => {
+    dispatch({ type: StreamsActionType.TOGGLE_AUDIO, id });
+  };
+
+  const toggleVideo = (id: StreamId) => {
+    dispatch({ type: StreamsActionType.TOGGLE_VIDEO, id });
+  };
+
+  const reset = () => {
+    dispatch({ type: StreamsActionType.RESET });
+  };
+
+  const initializeDeviceList = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: idealCameraConfig,
       });
       if (stream) {
-        stream.getTracks().forEach((track) => {
-          track.stop();
-        });
-        const { cameraList, microphoneList } = await getMediaDevicesLists();
-        if (streams.size === 0) {
-          await addStream(StreamTypes.MEDIA, cameraList[0], microphoneList[0]);
-        }
+        stopTracks(stream);
+        await getMediaDevicesLists();
+        // const { cameraList, microphoneList } = await getMediaDevicesLists();
         // if (!camera) {
         //   setCamera(cameraList[0]);
         // } else {
@@ -205,7 +304,7 @@ const useMediaDevices = ({ handleError }: UseMediaDevicesArguments = {}): MediaD
     } catch (error: unknown) {
       _handleError(error);
     }
-  }, [streams]);
+  };
 
   useEffect(() => {
     navigator.mediaDevices.addEventListener('devicechange', initializeDeviceList);
@@ -215,16 +314,17 @@ const useMediaDevices = ({ handleError }: UseMediaDevicesArguments = {}): MediaD
   }, []);
 
   useEffect(() => {
-    initializeDeviceList();
-  }, []);
+    if (cameraList.length > 0 && microphoneList.length > 0 && streams.size === 0) {
+      addStream(StreamTypes.MEDIA, microphoneList[0], cameraList[0]);
+    }
+  }, [streams, cameraList, microphoneList]);
 
   useEffect(() => {
-    console.log(streams);
-  }, [streams]);
-
-  // useEffect(() => {
-  //   console.log(cameraList);
-  // }, [cameraList, microphoneList]);
+    initializeDeviceList();
+    return () => {
+      dispatch({ type: StreamsActionType.RESET });
+    };
+  }, []);
 
   useEffect(() => {
     if (microphone && camera) {
@@ -260,22 +360,6 @@ const useMediaDevices = ({ handleError }: UseMediaDevicesArguments = {}): MediaD
       setMediaStream(stream);
     } catch (error: unknown) {
       _handleError(error);
-    }
-  };
-
-  const toggleAudio = () => {
-    const audioTracks = mediaStreamRef.current?.getAudioTracks();
-    if (audioTracks && audioTracks.length) {
-      audioTracks[0].enabled = !audioTracks[0].enabled;
-      setIsAudioEnabled(audioTracks[0].enabled);
-    }
-  };
-
-  const toggleVideo = () => {
-    const videoTracks = mediaStreamRef.current?.getVideoTracks();
-    if (videoTracks && videoTracks.length) {
-      videoTracks[0].enabled = !videoTracks[0].enabled;
-      setIsVideoEnabled(videoTracks[0].enabled);
     }
   };
 
@@ -332,10 +416,6 @@ const useMediaDevices = ({ handleError }: UseMediaDevicesArguments = {}): MediaD
     setCamera,
     microphone,
     setMicrophone,
-    isAudioEnabled,
-    isVideoEnabled,
-    toggleAudio,
-    toggleVideo,
     mediaStream,
     startDisplayCapture,
     stopDisplayCapture,
@@ -345,6 +425,11 @@ const useMediaDevices = ({ handleError }: UseMediaDevicesArguments = {}): MediaD
     microphoneCapabilities,
     cameraSettings,
     microphoneSettings,
+    streams,
+    addStream,
+    toggleAudio,
+    toggleVideo,
+    reset,
   };
 };
 
